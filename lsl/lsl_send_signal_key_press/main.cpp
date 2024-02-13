@@ -3,10 +3,11 @@
 #include <vector>
 #include <ncurses.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     try {
         // Create a new stream_info
-        lsl::stream_info info("KeyboardInput", "Markers", 1, 1, lsl::cf_int32, "myuniqueid123456");
+		const int nchannels = 1;
+        lsl::stream_info info(argc > 1 ? argv[1] : "SimpleStream", "EEG", nchannels);
 
         // Create the outlet
         lsl::stream_outlet outlet(info);
