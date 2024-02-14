@@ -9,7 +9,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 # Add a library to this build. The name of the library is MyLibrary and it
 # consists of only the MyLibrary.cpp file
-add_executable(BlinkProg blinkMain.cpp)
+add_executable(BlinkProg blink.cpp)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(BlinkProg PUBLIC Crow::Crow)
 target_link_libraries(BlinkProg PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
