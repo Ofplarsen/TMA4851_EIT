@@ -1,16 +1,16 @@
-#include <iostream>
-#include <vector>
-#include <string>
-
-using namespace std;
+#include "crow.h"
 
 int main()
 {
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
+    crow::SimpleApp app;
 
-    for (const string& word : msg)
-    {
-        cout << word << " ";
-    }
-    cout << endl;
+    CROW_ROUTE(app, "/")([](){
+        return "Hello world";
+    });
+
+    CROW_ROUTE(app, "/test")([](){
+        return "Reached test";
+    });
+
+    app.port(18080).run();
 }
