@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <ncurses.h>
+#include <thread>
 
 int main(int argc, char *argv[]) {
     try {
@@ -25,7 +26,11 @@ int main(int argc, char *argv[]) {
                 // Send 1 through the outlet when 'o' is pressed
                 std::vector<int> marker_sample = {1};
                 outlet.push_sample(marker_sample);
-                std::cout << "Sent marker: 1" << std::endl;
+                std::cout << "Init marker: 1" << std::endl;
+				std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                marker_sample = {0};
+                outlet.push_sample(marker_sample);
+                std::cout << "End marker: 0" << std::endl;
             }
             if (ch == 'q') {
                 break; // Break the loop if 'q' is pressed
