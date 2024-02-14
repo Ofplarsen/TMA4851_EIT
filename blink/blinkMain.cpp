@@ -1,19 +1,22 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <lsl_cpp.h>
 
-int return4(){
+
+int return4(std::vector<std::string> choices){
     // Create the window
     sf::RenderWindow window(sf::VideoMode(400, 400), "Grid Blinking");
 
     // Define the grid layout (2x2)
-    const int rows = 3;
-    const int cols = 3;
+    const int rows = 2;
+    const int cols = 2;
     const float cellWidth = 100.f;
     const float cellHeight = 100.f;
 
     // Define blink frequencies for each cell
-    std::vector<float> blinkFrequencies = {0.05f, 0.1f, 0.2f, 0.4f, 1.0f, 2.0f, 3.0f, 4.0f, 10.0f};
+    // std::vector<float> blinkFrequencies = {0.05f, 0.1f, 0.2f, 0.4f, 1.0f, 2.0f, 3.0f, 4.0f, 10.0f};
+    std::vector<float> blinkFrequencies = {2.0f, 3.0f, 4.0f, 10.0f};
 
     // Create text objects for each cell
     std::vector<sf::Text> texts;
@@ -24,7 +27,7 @@ int return4(){
         sf::Text text;
         text.setFont(font);
         text.setCharacterSize(24);
-        text.setString(std::to_string(i + 1));
+        text.setString(choices[i]);
         text.setFillColor(sf::Color::White);
         texts.push_back(text);
     }
