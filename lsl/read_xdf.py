@@ -4,7 +4,7 @@ import pyxdf
 
 def main():
     # Load the XDF file
-    filename = 'test_data/sub-P001/ses-S001/eeg/sub-P001_ses-S001_task-Default_run-001_eeg.xdf'
+    filename = 'test_data/sub-P001/ses-S001/eeg/p300_3000ms_between_each.xdf'
     streams, fileheader = pyxdf.load_xdf(filename)
 
     # Extract the streams
@@ -30,7 +30,7 @@ def main():
     # Plot the data
     plt.figure(figsize=(10, 6))
     plt.subplot(2, 1, 1)
-    plt.plot(timestamps_1, data_2)
+    plt.plot(timestamps_1, data_1)
     plt.title('Stream 1')
     plt.xlabel('Time')
     plt.ylabel('Data')
@@ -40,7 +40,7 @@ def main():
     plt.title('Stream 2')
     plt.xlabel('Time')
     plt.ylabel('Data')
-
+    plt.xticks(timestamps_2, rotation=45)  # Adjust rotation as needed
     plt.tight_layout()
     plt.show()
 
