@@ -1,4 +1,7 @@
 # Byte-compiled / optimized / DLL files
+..gitignore.un~
+.gitignore~
+*.idea/
 .DS_Store
 *.build/
 *.vscode/

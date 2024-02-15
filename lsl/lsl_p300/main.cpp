@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
     }
 
     std::vector<Square> squares(4);
-	int horizontal = 1920;
-	int vertical = 1080;
+	int horizontal = 3840*2/3;
+	int vertical = 2160*2/3;
 
     for (int i = 0; i < 4; ++i) {
         squares[i].frequency = std::atoi(argv[1]);
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
     while (!quit) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_q)) {
                 quit = true;
             }
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_o) {
