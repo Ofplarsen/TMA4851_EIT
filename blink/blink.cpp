@@ -5,7 +5,15 @@
 
 
 using namespace std;
+void sendLSL(int signal){
+    const int nchannels = 1;
 
+    lsl::stream_info info("FlickerStream", "Markers", nchannels); 
+    lsl::stream_outlet outlet(info);
+
+    std::vector<int> marker = {signal};
+	outlet.push_sample(marker);
+}
 
 int main()
 {
@@ -23,7 +31,8 @@ int main()
     CROW_ROUTE(app, "/json")
         .methods("POST"_method)
     ([](const crow::request& req){
-        //Send message that blinking will start
+        //old code, keeping in case moving this to func does not work.
+        /*
         // Create LSL outlet
         const int nchannels = 1;
         cout << "1" << endl;
@@ -31,10 +40,11 @@ int main()
         lsl::stream_info info("FlickerStream", "Markers", nchannels);
         lsl::stream_outlet outlet(info);
         
+        //Send message that blinking will start
         std::vector<int> marker_start = {1};
 		outlet.push_sample(marker_start);
-
-
+        */
+       sendLSL(1);
 
 
         //Start blinking
@@ -60,8 +70,7 @@ int main()
         os << sum;
 
         //Send message that blinking is finished.
-        marker_start = {0};
-		outlet.push_sample(marker_start);
+        sendLSL(0);
 
 
         return crow::response{os.str()};
