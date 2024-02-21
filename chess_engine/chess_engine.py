@@ -1,13 +1,14 @@
 import chess
 import random
-import json
 from flask import Flask, request, jsonify
 
 
 
 def board_and_moves(board):
-    data = {"choices": [], "display": board.fen()}
     legal_moves = list(board.legal_moves)
+    data = {"choices": [], "display": board.fen(), "status": not board.is_game_over()}
+    if not data['status']: #drops if no choises to send
+        return data
     for piece in chess.PIECE_TYPES:
         # Get squares where current piece is located
         piece_squares = board.pieces(piece, chess.WHITE)
@@ -28,7 +29,7 @@ def convert_to_string(data):
     return "".join(data['choices'])
 
 
-def play_the_game(user_move, board):
+"""def play_the_game(user_move, board):
     move = convert_to_string(convert_to_string(user_move) )       # Input from blinking
     board.push(chess.Move.from_uci(move))  # Make user move
     
@@ -38,12 +39,34 @@ def play_the_game(user_move, board):
     board.push(random.choice(list(board.legal_moves)))# Make random move for computer
     
     if board.is_game_over():                    # Check if game is over after user move
+        print('Game over')"""
+
+def play_the_game(user_move, board):
+    print("User move:\n", user_move)
+    print("Board before user move:\n", board)
+    
+    move = convert_to_string(user_move)  # Input from blinking
+    print("Move converted to string:\n", move)
+    
+    board.push(chess.Move.from_uci(move))  # Make user move
+    print("Board after user move:\n", board)
+    
+    if board.is_game_over():  # Check if game is over after user move
+        print('Game over')
+    
+    computer_move = random.choice(list(board.legal_moves))
+    print("Computer move:\n", computer_move)
+    board.push(computer_move)  # Make random move for computer
+    print("Board after computer move:\n", board)
+    
+    if board.is_game_over():  # Check if game is over after computer move
         print('Game over')
 
+
 #############################################################################
 #############################################################################
 
-
+board = chess.Board()
 app = Flask(__name__)
 
 
@@ -54,6 +77,7 @@ def send_game_data():
     print("Received GET request to /choice_space")
     #dummy data
     data = board_and_moves(board) 
+    print('This is the data to be sent', data)
     return jsonify(data), 200
 
 
@@ -77,6 +101,5 @@ def move_chosen():
 
 
 if __name__ == '__main__':
-    board = chess.Board()
     app.run(debug=True)
 

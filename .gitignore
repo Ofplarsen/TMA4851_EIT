@@ -1,4 +1,8 @@
 # Byte-compiled / optimized / DLL files
+*__pychache__/
+..gitignore.un~
+.gitignore~
+*.idea/
 .DS_Store
 *.build/
 *.vscode/
