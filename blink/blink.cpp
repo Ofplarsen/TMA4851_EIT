@@ -1,6 +1,6 @@
 #include "crow.h"
 #include <iostream>
-#include "blinkMain.cpp"
+#include "blinkWindow.cpp"
 
 
 
@@ -53,7 +53,7 @@ int main()
             string name = choices[i]["id"].s();
             choiceNames.push_back(name);
         }
-        return4(choiceNames);
+        blinkCols(choiceNames);
         cout << "length of vector: " << choices.size() << endl;
         int sum = 4;
         std::ostringstream os;
