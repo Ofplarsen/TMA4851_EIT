@@ -2,9 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pyxdf
 from scipy.interpolate import interp1d
+from scipy.signal import find_peaks
 channels = ['Fp1', 'Fz', 'F3', 'F7', 'F9', 'FC5', 'FC1', 'C3', 'T7', 'CP5', 'CP1', 'Pz', 'P3', 'P7'
             , 'P9', 'O1', 'Oz', 'O2', 'P10', 'P8', 'P4', 'CP2', 'CP6', 'T8', 'C4', 'Cz'
             , 'FC2', 'FC6', 'F10', 'F8', 'F4', 'Fp2','AUX_1', 'ACC_X', 'ACC_Y', 'ACC_Z']
+
+def get_peaks(data, timestamps, threshold=0.5):
+    peaks, _ = find_peaks(data, height=threshold)
+    return timestamps[peaks]
+
 def main():
     # Load the XDF file
     filename = 'test_data/sub-w_sensor/ses-S001/eeg/sub-w_sensor_ses-S001_task-Default_run-001_eeg.xdf'
@@ -28,7 +34,7 @@ def main():
     timestamps_1 = np.array(stream_1['time_stamps'])
     timestamps_2 = np.array(stream_2['time_stamps'])
     t = timestamps_2
-    data_1 = np.zeros(len(timestamps_2))
+    data_1 = -1 * np.ones(len(timestamps_2))
     for f, i in enumerate(timestamps_1):
         for p, y in enumerate(timestamps_2):
             l = round(i,2)
@@ -37,7 +43,8 @@ def main():
                 data_1[p] = data_1_[f]
 
 
-
+    #print(get_peaks(data_1, timestamps_2))
+    #print(get_peaks(data_2.T[-4], timestamps_2))
     # Plot the data
     plt.figure(figsize=(10, 6))
     plt.subplot(2, 1, 1)
