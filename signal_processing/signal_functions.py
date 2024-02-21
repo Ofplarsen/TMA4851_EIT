@@ -2,6 +2,7 @@
 from scipy.signal import butter, filtfilt
 import numpy as np
 import matplotlib.pyplot as plt
+import mat73
 
 
 
@@ -122,16 +123,16 @@ def ReadFile(filename,n, read_start, read_end):
    for n_calib in range(len(EEG['train'])):
       data = np.asarray(EEG['train'][n_calib]['data'])
       srate = EEG['train'][n_calib]['srate']
-      data = sf.butter_bandpass_filter(data, 0.5, 10, srate, 4)
+      data = butter_bandpass_filter(data, 0.5, 10, srate, 4)
       markers = EEG['train'][n_calib]['markers_target']
       print(markers)
 
       targetID = np.where(markers==1)[0]
       nontargetID = np.where(markers==2)[0]
       allID = np.append(targetID, nontargetID)
-      tmp_nosortEEG = sf.extractEpoch3D(data, allID, srate, baseline, frame, False)
-      tmp_targetEEG = sf.extractEpoch3D(data, targetID, srate, baseline, frame, False)
-      tmp_nontargetEEG = sf.extractEpoch3D(data, nontargetID, srate, baseline, frame, False)
+      tmp_nosortEEG = extractEpoch3D(data, allID, srate, baseline, frame, False)
+      tmp_targetEEG = extractEpoch3D(data, targetID, srate, baseline, frame, False)
+      tmp_nontargetEEG = extractEpoch3D(data, nontargetID, srate, baseline, frame, False)
       if n_calib == 0:
          targetEEG = tmp_targetEEG
          nontargetEEG = tmp_nontargetEEG

@@ -29,3 +29,7 @@ def ClassificationWithAvgMax(max_notarget, check, threshold, n):
       return True
    else:
       return False
+   
+nontargetuse, targetuse, nosortuse = sf.ReadFile("test_data/s52.mat", 8, 250, 450)
+maxnotarg = MakeAvgMax(nontargetuse, 8)
+ClassificationWithAvgMax(maxnotarg, nosortuse, 0.6, 8)
