@@ -63,8 +63,12 @@ int main()
             string name = choices[i]["id"].s();
             choiceNames.push_back(name);
         }
+        
         blinkCols(choiceNames);
         cout << "length of vector: " << choices.size() << endl;
+
+        
+        blinkRows(choiceNames);
         int sum = 4;
         std::ostringstream os;
         os << sum;
