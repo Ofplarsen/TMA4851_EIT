@@ -39,7 +39,7 @@ class BackendClient:
             # Handle error
             print(f"Error: {response.status_code}")
 
-    def send_index_to_flicker(self, data_from_game, list_of_indices):
+    def send_data_to_flicker(self, data_from_game, list_of_indices):
         """Sending index data from signal processing data to the flickering unit. Returning a status if we can expect further iterations or not (before getting a choice returned)."""
         url = f"{self.base_url}/index_data"
         data = dict(state=data_from_game, indices=list_of_indices)
@@ -92,24 +92,27 @@ class BackendClient:
 
 
 #example usage
-client = BackendClient("http://127.0.0.1:5000")
-data_from_game = client.get_data_from_game()
-print("Data from component:", data_from_game)
-client.send_data_to_game({"choices": ['a2','a4']})
+##client = BackendClient("http://127.0.0.1:5000")
+#data_from_game = client.get_data_from_game()
+#print("Data from component:", data_from_game)
+#client.send_data_to_game({"choices": ['a2','a4']})
+
+
 # main loop
 if __name__ == '__main__':
     client = BackendClient("http://127.0.0.1:5000")
     status = True
     while status:
+        list_of_indices = []
         #get choises from game engine
         print('\Requesting data from game\n')
         data_from_game = client.get_data_from_game()
 
         #send choises to visual unit/flickering
         print('\nSending received data to flickering unit\n')
-        client.send_state_to_flicker(data_from_game)
+        client.send_data_to_flicker(data_from_game, list_of_indices=list_of_indices)
         is_final_flag = False
-        list_of_indices = []
+        #list_of_indices = []
         while not is_final_flag:
             #receive start signal (lsl?)
             client.detect_lsl_finished_signal()
