@@ -54,10 +54,19 @@ def visualize_max_amp_dist(tgt, ntgt):
     plt.show()
 
 
-def train_subject(target_data, non_target_data):
+def train_subject(tgt, ntgt):
     """
 
-    :param target_data: np.ndarray. Shape = (channels, time, trial)
-    :param non_target_data:
+    :param tgt: np.ndarray. Shape = (channels, time, trial)
+    :param ntgt: np.ndarray. Shape = (channels, time, trial)
     :return:
     """
+    max_tgt = np.max(tgt, axis=1)
+    max_ntgt = np.max(ntgt, axis=1)
+
+    # Take mean and std over event axis:
+    mean_max_tgt = np.mean(max_tgt, axis=1)
+    std_max_tgt = np.std(max_tgt, axis=1)
+    mean_max_ntgt = np.mean(max_ntgt, axis=1)
+    std_max_ntgt = np.std(max_ntgt, axis=1)
+

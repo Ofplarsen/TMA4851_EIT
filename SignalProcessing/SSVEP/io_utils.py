@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Change root to fit your system:
-root = "C:/Users/tbaad/Sync/Education/2024/EiT/SignalProcessing/Data/SSVEP/OlavBachelor/"
+root = "C:/Users/tbaad/Sync/Education/2024/EiT/SignalProcessing/Data/"
 channel_map = {
     "Pz": 11, "P3": 12, "P7": 13, "O1": 15,
     "Oz": 16, "O2": 17, "P8": 19, "P4": 20
