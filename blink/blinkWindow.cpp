@@ -10,7 +10,7 @@ using namespace std;
 int blinkRowsOrCols(vector<string> choices, bool useRows){
 
     bool timeOut = true;
-    int seconds = 5;
+    int seconds = 7;
     
     // Create the window
     sf::RenderWindow window(sf::VideoMode(800, 800), "Grid Blinking");
@@ -30,7 +30,7 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
 
     // Define blink frequencies for each cell
     // vector<float> blinkFrequencies = {0.05f, 0.1f, 0.2f, 0.4f, 1.0f, 2.0f, 3.0f, 4.0f, 10.0f};
-    vector<float> blinkFrequencies = {1.0f, 2.0f, 5.0f, 11.0f, 10.0f, 20.0f};
+    vector<float> blinkFrequencies = {4.0f, 5.0f, 6.0f, 7.0, 11.0f, 13.0f};
     //vector<float> blinkFrequencies = {5.0f, 10.0f, 20.0f, 40.0f};
 
     

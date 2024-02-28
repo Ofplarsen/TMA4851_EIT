@@ -1,10 +1,15 @@
 #include "crow.h"
 #include <iostream>
 #include "blinkWindow.cpp"
+#include <windows.h>  
+//#include "displayChess.cpp"
+//#include "surgeChess\\src\\chess_engine.cpp"
 
 
 
 using namespace std;
+
+/*
 void sendLSL(int signal){
     const int nchannels = 1;
 
@@ -14,10 +19,22 @@ void sendLSL(int signal){
     std::vector<int> marker = {signal};
 	outlet.push_sample(marker);
 }
+*/
+
+void sendLSL2(int signal, lsl::stream_outlet outlet){
+    std::vector<int> marker = {signal};
+	outlet.push_sample(marker);
+}
 
 int main()
 {
+    const int nchannels = 1;
+    lsl::stream_info info("FlickerStream", "Markers", nchannels,  0.0, lsl::cf_int16, "MentalChess"); 
+    lsl::stream_outlet outlet(info);
+
+
     crow::SimpleApp app;
+
 
     CROW_ROUTE(app, "/")([](){
         return "Hello world";
@@ -30,7 +47,8 @@ int main()
 
     CROW_ROUTE(app, "/json")
         .methods("POST"_method)
-    ([](const crow::request& req){
+    ([&outlet, nchannels](const crow::request& req){
+        
         //old code, keeping in case moving this to func does not work.
         /*
         // Create LSL outlet
@@ -44,7 +62,10 @@ int main()
         std::vector<int> marker_start = {1};
 		outlet.push_sample(marker_start);
         */
-       sendLSL(1);
+       //sendLSL2(1, outlet);
+
+       std::vector<int> marker = {0};
+	    outlet.push_sample(marker);
 
 
         //Start blinking
@@ -67,16 +88,23 @@ int main()
         blinkCols(choiceNames);
         cout << "length of vector: " << choices.size() << endl;
 
+        //Send message that blinking is finished.
+        //sendLSL2(2, outlet);
+
+        marker = {1};
+        outlet.push_sample(marker);
         
         blinkRows(choiceNames);
+
+        //Send message that blinking is finished.
+        //sendLSL2(0, outlet);
+        marker = {2};
+	    outlet.push_sample(marker);
+
+
         int sum = 4;
         std::ostringstream os;
         os << sum;
-
-        //Send message that blinking is finished.
-        sendLSL(0);
-
-
         return crow::response{os.str()};
     });
     
