@@ -6,6 +6,8 @@ project(BlinkProg)
 
 find_package(Crow CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
+find_package(pugixml CONFIG REQUIRED)
+find_package(asio CONFIG REQUIRED)
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 find_package(LSL CONFIG REQUIRED)
 
@@ -15,5 +17,7 @@ add_executable(BlinkProg blink.cpp)
 include_directories(${Boost_INCLUDE_DIRS})
 
 target_link_libraries(BlinkProg PRIVATE LSL::lsl)
+target_link_libraries(BlinkProg PRIVATE asio::asio)
+target_link_libraries(BlinkProg PRIVATE pugixml::pugixml)
 target_link_libraries(BlinkProg PUBLIC Crow::Crow)
 target_link_libraries(BlinkProg PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
