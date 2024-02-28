@@ -4,18 +4,8 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-class GameEngine:
-    def __init__(self) -> None:
-        pass
 
-    def do_move(self, user_move):
-        pass
-    
-    def get_game_data(self):
-        pass
-
-
-class ChessEngine(GameEngine):
+class ChessEngine:
     def __init__(self) -> None:
         self.board = chess.Board()
 
@@ -82,10 +72,11 @@ class ChessEngine(GameEngine):
 
         self.board = board
 
+chess_engine = ChessEngine()
 
 #############################################################################
 @app.route('/choice_space', methods=['GET'])
-def send_game_data(engine:GameEngine):
+def send_game_data(engine=chess_engine):
     """ data:output json format for interacting with backend"""
 
     print("Received GET request to /choice_space")
@@ -96,7 +87,7 @@ def send_game_data(engine:GameEngine):
 
 
 @app.route('/choices', methods=['POST'])
-def move_chosen(engine:GameEngine):
+def move_chosen(engine=chess_engine):
     user_move = request.json  # Get JSON data from the request body
     
     print("Received data:", user_move)
@@ -113,7 +104,6 @@ def move_chosen(engine:GameEngine):
 
 
 
-chess_engine = ChessEngine()
 
 
 if __name__ == '__main__':

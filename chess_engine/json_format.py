@@ -42,3 +42,7 @@ model = {
 
 # return format
 [id1, id2]"""
+
+
+#format of receiving index data (and also previous game data)
+#dict(state=data_from_game, indices=list_of_indices) #data_from_game is similar the format above
