@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt
 import pyxdf
 import time
 from pylsl import StreamInlet, resolve_stream, resolve_byprop
-from SignalProcessingRepo.SignalProcessing.io_utils import read_xdf
-from SignalProcessingRepo.SignalProcessing import filter
-from SignalProcessingRepo.SignalProcessing.SSVEP.cca import cca_maxcorr_freq
-from SignalProcessingRepo.SignalProcessing.SSVEP.cca import get_Y
+from io_utils import read_xdf
+import filter
+from SSVEP.cca import cca_maxcorr_freq, get_Y
 from lsl_interactions import listen_for_amp, listen_for_start, send_index_data
 from pylsl import StreamInfo, StreamOutlet
 
@@ -24,8 +23,8 @@ if __name__ == "__main__":
     # seed parameters:
     f_k_arr = np.array([4, 5, 6, 7])
     sample_rate = 500
-    t = np.linspace(0, 2, 1/sample_rate)
-    Y = get_Y(f_k_arr, t)
+    #t = np.arange(0, 2, 1/sample_rate)
+    #Y = get_Y(f_k_arr, t)
 
     flicker_info = resolve_stream('source_id', 'MentalChess')
     flicker_inlet = StreamInlet(flicker_info[0])
@@ -38,16 +37,19 @@ if __name__ == "__main__":
 
 
     while True:
-        t = listen_for_start(flicker_inlet)  # method defined by Hans
+        tid = listen_for_start(flicker_inlet)  # method defined by Hans
         X_row = listen_for_amp(flicker_inlet, amp_inlet, indicator=[1])  # to be defined by Hans
         X_col = listen_for_amp(flicker_inlet, amp_inlet, indicator=[2])
+        t = np.arange(0, X_row.shape[0], 1)
+        Y = get_Y(f_k_arr, t)
         # X_row = (
         #
         # apply signal processing to row_amp and col_amp respectively to
         # first obtain the max-correlation reference frequency and then
         # find argmax = row_n
-        row_idx = cca_maxcorr_freq(X_row, Y)  # already exists, but with different name
-        col_idx = cca_maxcorr_freq(X_col, Y)
+        print(Y.shape, X_row.shape)
+        row_idx = cca_maxcorr_freq(pd.DataFrame(X_row), Y)  # already exists, but with different name
+        col_idx = cca_maxcorr_freq(pd.DataFrame(X_col), Y)
         idxs = [row_idx, col_idx]
         send_index_data(backend_inlet, idxs)
 

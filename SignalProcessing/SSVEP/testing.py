@@ -1,16 +1,18 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from SignalProcessingRepo.SignalProcessing.SSVEP.cca import get_Y, rolling_cca_classification
+from SSVEP.cca import get_Y, rolling_cca_classification
 #from .. import filter
-from SignalProcessingRepo.SignalProcessing import filter
+import filter
 
 
-def create_ref(f_k_arr, sample_rate):
-    t = np.arange(0, 100, 1/sample_rate)
+def create_ref(f_k_arr, sample_rate, t_max):
+    t = np.arange(0, t_max, 1/sample_rate)
     arr = np.array([np.sin(2 * np.pi * f_k * t) for f_k in f_k_arr]).T
-    df = pd.DataFrame(data=arr, columns=f_k_arr, index=t)
-    return df
+    #df = pd.DataFrame(data=arr, columns=f_k_arr, index=t)
+    freq = f_k_arr[1]
+    ser = pd.Series(np.sin(2*np.pi*freq*t), index=t)
+    return ser
 
 
 def create_X(
@@ -44,7 +46,7 @@ def create_X(
         X.loc[t_1:t_2, "x"] = ref.loc[t_1:t_2, f_k]
     for noise in noises:
         X.iloc[:, 0] += noise[0] * np.sin(2 * np.pi * noise[1] * t)
-    X.iloc[:, 0] += np.random.normal(X.iloc[:, 0], scale=white_noise * X.iloc[:, 0].std()
+    X.iloc[:, 0] += np.random.normal(X.iloc[:, 0], scale=white_noise * X.iloc[:, 0].std())
     return X, state_ser
 
 
@@ -55,12 +57,13 @@ def create_X_mat(
 ) -> pd.DataFrame:
     t_max = 100
     t = np.arange(0, t_max, 1/sample_rate)
-    ref = create_ref(f_k_arr, sample_rate)
+    ref = create_ref(f_k_arr, sample_rate, t_max)
     n = t_max * sample_rate
-    X = pd.DataFrame(data=np.outer(ref, np.ones(n_channels)), index=t)
-    t_mat = np.outer(t, np.ones(n_channels))
+    a = np.outer(ref, np.ones(n_channels))
+    X = pd.DataFrame(data=a, index=t)
+    t_mat = np.outer(t, np.ones(n_channels)).astype(float)
     for noise_param in noise_params:
-        X += noise_param[0] * np.sin(2 * np.pi * noise_params[1] * t_mat)
+        X += noise_param[0] * np.sin(float(2 * np.pi * noise_param[1]) * t_mat)
     X += np.random.normal(0, scale=white_noise_sd, size=X.shape)
     return X
 
