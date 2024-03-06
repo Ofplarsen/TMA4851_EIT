@@ -68,6 +68,8 @@ int main()
         auto state = x["state"];
         auto choices = state["choices"];
         auto display = state["display"];
+
+        cout << display << endl;
         
         vector<string> choiceNames;
         vector<string> pathIds = {};
