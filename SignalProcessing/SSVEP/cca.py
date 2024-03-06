@@ -50,7 +50,8 @@ def cca_corr(X, Y_k, include_w_y=False):
 
 def cca_maxcorr_freq(X, Y, include_w_y=False):
     f_k_arr = np.unique(Y.columns.get_level_values("freq"))
-    corrs = pd.Series(np.empty_like(f_k_arr), index=f_k_arr)
+    #corrs = pd.Series(np.empty_like(f_k_arr), index=f_k_arr)
+    corrs = pd.Series(np.empty_like(f_k_arr))
     w_y_ser = pd.Series(np.empty(Y.shape[1]), index=Y.columns)
     if include_w_y:
         for freq in f_k_arr:
@@ -60,12 +61,9 @@ def cca_maxcorr_freq(X, Y, include_w_y=False):
         freq = corrs.idxmax()
         return freq, w_y_ser[freq]
     else:
-        corrs = pd.Series({freq: cca_corr(X, Y.loc[:, freq])[0] for freq in f_k_arr})
-        print(20*"*")
-        print(corrs)
-        #freq = corrs.idxmax()
-        freq_ind =
-        return freq
+        corrs = pd.Series([cca_corr(X, Y.loc[:, freq])[0] for freq in f_k_arr])
+        freq_ind = corrs.idxmax()
+        return freq_ind
 
 
 def rolling_cca_classification(X, Y, win, step, include_w_y=False):
