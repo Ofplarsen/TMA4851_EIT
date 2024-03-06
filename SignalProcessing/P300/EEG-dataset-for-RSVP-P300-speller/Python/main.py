@@ -5,6 +5,7 @@ import preprocessing as preproc
 from max_classifier import visualize_max_amp_dist
 
 
+
 # Please change 'full_path' such that it points to the .mat file in your system:
 proj_root = "C:/Users/tbaad/Sync/Education/2024/EiT/SignalProcessing"
 data_root = proj_root + "/Data/P300"

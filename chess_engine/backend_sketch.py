@@ -11,7 +11,9 @@ class BackendClient:
 
 
     def get_data_from_game(self):
-        url = f"{self.base_url}/choice_space"
+        #temp
+        base_url = "http://127.0.0.1:5000"
+        url = f"{base_url}/choice_space"
         response = requests.get(url)
         if response.status_code == 200:
             return response.json()
@@ -20,7 +22,9 @@ class BackendClient:
             print(f"Error: {response.status_code}")
 
     def send_data_to_game(self, data):
-        url = f"{self.base_url}/choices"
+        #temp
+        base_url = "http://127.0.0.1:5000"
+        url = f"{base_url}/choices"
         response = requests.post(url, json=data)
         if response.status_code == 200:
             #print('Data sent successfully to game. Response: ', response.json())
@@ -39,14 +43,14 @@ class BackendClient:
             # Handle error
             print(f"Error: {response.status_code}")
 
-    def send_index_to_flicker(self, data_from_game, list_of_indices):
+    def send_data_to_flicker(self, data_from_game, list_of_indices):
         """Sending index data from signal processing data to the flickering unit. Returning a status if we can expect further iterations or not (before getting a choice returned)."""
         url = f"{self.base_url}/index_data"
         data = dict(state=data_from_game, indices=list_of_indices)
         response = requests.post(url, json=data)
         if response.status_code == 200:
             print('Sent index to flickering unit: ',response.json())
-            return response.json().is_final
+            return response.json()
         else:
             # Handle error
             print(f"Error: {response.status_code}")
@@ -92,32 +96,36 @@ class BackendClient:
 
 
 #example usage
-client = BackendClient("http://127.0.0.1:5000")
-data_from_game = client.get_data_from_game()
-print("Data from component:", data_from_game)
-client.send_data_to_game({"choices": ['a2','a4']})
+##client = BackendClient("http://127.0.0.1:5000")
+#data_from_game = client.get_data_from_game()
+#print("Data from component:", data_from_game)
+#client.send_data_to_game({"choices": ['a2','a4']})
+
+
 # main loop
 if __name__ == '__main__':
-    client = BackendClient("http://127.0.0.1:5000")
+    client = BackendClient("http://10.22.221.121:18080")
     status = True
     while status:
+        list_of_indices = []
         #get choises from game engine
         print('\Requesting data from game\n')
         data_from_game = client.get_data_from_game()
 
         #send choises to visual unit/flickering
         print('\nSending received data to flickering unit\n')
-        client.send_state_to_flicker(data_from_game)
+        client.send_data_to_flicker(data_from_game, list_of_indices=list_of_indices)
         is_final_flag = False
-        list_of_indices = []
+        #list_of_indices = []
         while not is_final_flag:
             #receive start signal (lsl?)
             client.detect_lsl_finished_signal()
             print('\nSend POST to signal processing\n')
-            received_index = client.get_index_from_sp_unit()
-            list_of_indices.append(received_index)
+            #received_index = client.get_index_from_sp_unit()
+            #list_of_indices.append(received_index)
+            list_of_indices = [0, 1]
             print('\nSending indexing data to flickering unit\n')
-            choices, is_final_flag = client.send_index_to_flicker(data_from_game, list_of_indices)
+            choices, is_final_flag = client.send_data_to_flicker(data_from_game, list_of_indices)
         print('\nSending actual decicions back to game\n')
         client.send_data_to_game(choices)
         

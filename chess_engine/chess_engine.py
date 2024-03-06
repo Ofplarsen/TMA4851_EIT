@@ -2,6 +2,10 @@ import chess
 import random
 from flask import Flask, request, jsonify
 
+#############################################################################
+#############################################################################
+
+board = chess.Board()
 app = Flask(__name__)
 
 

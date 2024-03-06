@@ -1,31 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
 import testing
+from SignalProcessingRepo.SignalProcessing.io_utils import read_xdf
+
 
 f_k_arr = np.array([4, 5, 5.5, 6, 7, 7.4])  # fundamental frequencies
 
-#'''
-#X = io_utils.read_xdf("ERPSpellerDataWorking/dejittered-eeg.xdf")
-#X = io_utils.read_xdf("ERPSpellerDataWorkingV2/dejittered-eeg.xdf")
-#X = io_utils.read_xdf("BCISpellerV10/ERPSpellerData_A5_w/dejittered-eeg.xdf")
-#X = io_utils.read_xdf("BCISpellerV9/BCISpeller_A_5_times_olav/dejittered-eeg.xdf")
-#for col in X.columns:
-#    X[col].plot()
-#    plt.show()
-#X = apply_filters(X, 50, .25, (1, 15), 3)
-#for col in X.columns:
-#    X[col].plot()
-#    plt.show()
-#t = X.index
-#Y = cca.get_Y(f_k_arr, t)
-#corrs = cca.rolling_cca_corrs(X, Y, 2*500, 250)
-#corrs.plot()
-#plt.show()
+#read_xdf("SSVEP/Recent/sub-P001_2hz_square_ul_ses-S001_task-Default_run-001_eeg.xdf")
 
 # testing
 f_k_arr = np.array([4, 5, 5.5, 6, 7, 7.4])  # fundamental frequencies
-testing.run_test(f_k_arr, 500, [(2, 20), (1, 50), (1.5, 35)], 2.5)
+testing.run_test(f_k_arr, 500, [(2, 20), (1, 50), (1.5, 35)], 2.5, include_w_y=True)
 
 fig, ax = plt.subplots(8, 2)
 for i in range(0, 8):

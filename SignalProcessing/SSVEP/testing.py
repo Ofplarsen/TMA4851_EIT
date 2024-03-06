@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from cca import get_Y, rolling_cca_classification
-from filter import apply_filters
+from SignalProcessingRepo.SignalProcessing.SSVEP.cca import get_Y, rolling_cca_classification
+#from .. import filter
+from SignalProcessingRepo.SignalProcessing import filter
 
 
 def create_ref(f_k_arr, sample_rate):
@@ -44,22 +45,59 @@ def create_X(f_k_arr, sample_rate, noises: list[tuple], white_noise: tuple):
     return X, state_ser
 
 
-def classify(X, f_k_arr, win=2*500, step=250):
+def classify(X, f_k_arr, win=2*500, step=250, include_w_y=False):
     Y = get_Y(f_k_arr, X.index)
-    state_idx = rolling_cca_classification(X, Y, win, step)
-    return state_idx
+    return rolling_cca_classification(X, Y, win, step, include_w_y)
 
 
-def run_test(f_k_arr, sample_rate, noises, white_noise, win=2*500, step=250):
-    X, actual_state_idx = create_X(f_k_arr, sample_rate, noises, white_noise)
-    X1 = apply_filters(X, 50, .25, (1, 15), 3)
-    est_state_idx = classify(X1, f_k_arr, win, step)
-    fig, ax = plt.subplots(2, 1)
-    est_state_idx.plot(ax=ax[0], label="est state")
-    actual_state_idx.plot(ax=ax[0], label="true state")
-    X.plot(ax=ax[1])
-    ax[0].legend()
-    #actual_state_idx.plot(ax=ax)
+def run_test(
+        f_k_arr, sample_rate, noises, white_noise,
+        win=2*500, step=250, include_w_y=False
+):
+    # 1. Create plot of filtered signal
+    # 2. Create plot of estimated flickering frequency vs. actual flickering frequency
+    X, actual_freqs = create_X(f_k_arr, sample_rate, noises, white_noise)
+    X1 = filter.apply_filters(X, 50, .25, (1, 15), 3)
+    t_min, t_max = 0, 1
+
+    if include_w_y:
+        est_freqs, w_y_df = classify(X1, f_k_arr, win, step, True)
+        t = X.loc[t_min:t_max, :].index
+        Y = get_Y(f_k_arr, t).loc[:, est_freqs.iloc[0]]
+        w_y = w_y_df.iloc[0, :].values.reshape(-1, 1)
+        X_proj = Y @ w_y
+        X_proj.columns = ["Projection of filtered signal onto reference signals"]
+        fig, ax = plt.subplots(3, 1)
+        X_proj.plot(ax=ax[2])
+        ax[2].set_xlabel("t", size=15)
+        ax[2].set_ylabel("amplitude", size=15)
+        ax[2].legend(loc="lower left")
+    else:
+        est_freqs = classify(X1, f_k_arr, win, step, False)
+        fig, ax = plt.subplots(2, 1)
+
+    X.columns = ["Raw brain signal"]
+    X1.columns = ["Filtered brain signal"]
+    fig.suptitle("Simulated brain signal filtering", size=25)
+    X.loc[t_min:t_max, :].plot(ax=ax[0], label="Raw brain signal")
+    X1.loc[t_min:t_max, :].plot(ax=ax[1], label="Filtered brain signal")
+    ax[0].set_xlabel("t", size=15)
+    ax[1].set_xlabel("t", size=15)
+    ax[0].set_ylabel("amplitude", size=15)
+    ax[1].set_ylabel("amplitude", size=15)
+    ax[0].legend(loc="lower left")
+    ax[1].legend(loc="lower left")
     plt.show()
 
+    fig, ax = plt.subplots()
+    ax.set_title(
+        "Estimating the frequency of screen flickering from brain signal", size=25
+    )
+    est_freqs.plot(ax=ax, label="estimated flicker frequency (Hz)")
+    actual_freqs.plot(ax=ax, label="actual flicker frequency")
+    ax.legend()
+    ax.set_xlabel("t", size=15)
+    ax.set_ylabel("Flicker frequency (Hz)", size=15)
+    #actual_state_idx.plot(ax=ax)
+    plt.show()
 
