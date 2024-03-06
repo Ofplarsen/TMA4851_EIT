@@ -63,7 +63,8 @@ def cca_maxcorr_freq(X, Y, include_w_y=False):
         corrs = pd.Series({freq: cca_corr(X, Y.loc[:, freq])[0] for freq in f_k_arr})
         print(20*"*")
         print(corrs)
-        freq = corrs.idxmax()
+        #freq = corrs.idxmax()
+        freq_ind =
         return freq
 
 
