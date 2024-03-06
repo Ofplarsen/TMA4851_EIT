@@ -39,7 +39,8 @@ if __name__ == "__main__":
 
     while True:
         t = listen_for_start(flicker_inlet)  # method defined by Hans
-        X_row, X_col = listen_for_amp(flicker_inlet, amp_inlet)  # to be defined by Hans
+        X_row = listen_for_amp(flicker_inlet, amp_inlet, indicator=[1])  # to be defined by Hans
+        X_col = listen_for_amp(flicker_inlet, amp_inlet, indicator=[2])
         # X_row = (
         #
         # apply signal processing to row_amp and col_amp respectively to
