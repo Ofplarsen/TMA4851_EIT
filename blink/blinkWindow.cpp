@@ -29,9 +29,7 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
 
 
     // Define blink frequencies for each cell
-    // vector<float> blinkFrequencies = {0.05f, 0.1f, 0.2f, 0.4f, 1.0f, 2.0f, 3.0f, 4.0f, 10.0f};
     vector<float> blinkFrequencies = {4.0f, 5.0f, 6.0f, 7.0, 11.0f, 13.0f};
-    //vector<float> blinkFrequencies = {5.0f, 10.0f, 20.0f, 40.0f};
 
     
     // Create text objects for each cell
@@ -50,9 +48,6 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
 
     for (int i = 0; i < num_rectangles; ++i) {
         int offset = cellSize/2;
-
-        //sf::RectangleShape rectangle(sf::Vector2f(120.f, 50.f));
-        //rectangle.setFillColor(sf::Color(200, 0, 0)); 
         if (useRows){
             sf::RectangleShape rect;
             rect.setPosition(sf::Vector2f(20.f, 20.f + cellSize*i));
@@ -88,10 +83,6 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
         texts.push_back(text);
 
         //Create backgrounds
-        //sf::RectangleShape rectangle(sf::Vector2f(120.f, 50.f));
-        //rectangle.setFillColor(sf::Color(200, 0, 0)); 
-        
-        //cout << "Finished i: " << i << endl;
     }
 
     
@@ -112,79 +103,35 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
-        // Clear the window
         window.clear();
         time = clock.getElapsedTime().asSeconds();
 
-        // cout << "Starting first inner loop" << endl;
-        // Draw the grid
         for (int i = 0; i < cols; ++i) {
-            //cout << "i is: " << i << endl;
-            
-            // cout << "1" << endl;
             if (i < num_rectangles){
                 window.draw(rectangles[i]);
             }
-            // cout << "Starting inner loop, i: " << i <<", j: " << j << endl;
-        
-            // Blink effect based on elapsed time and frequency
-            
-            // cout << "2" << endl;
             int blinkFrequency;
 
-            
-
             blinkFrequency = blinkFrequencies[i];
-            
-            // cout << "3" << endl;
-            // cout << time - blinkoffset[i] << "<=" << "1.0f / " << blinkFrequency << endl;
             if (time - blinkoffset[i]>= 1.0f / blinkFrequency) {
-                // cout << "Midloop" << endl;
-                
-                // cout << "4" << endl;
                 if (i < num_rectangles){
-                    //if (rectangles[i].getFillColor() == sf::Color(100, i*50+50, 0)){
                     if (rectangles[i].getFillColor() == sf::Color::Black){
                         rectangles[i].setFillColor(sf::Color::White);
-                        //rectangles[i].setFillColor(sf::Color(100, 0, i*50+50));
                     } else {
                         rectangles[i].setFillColor(sf::Color::Black);
-                        //rectangles[i].setFillColor(sf::Color(100, i*50+50, 0));
                     }
                     blinkoffset[i] = clock.getElapsedTime().asSeconds();
                 }
-            // cout << "5" << endl;
-
-                    
 
             }
         }
         
-        //cout << "Starting first inner loop" << endl;
         for (int i = 0; i < rows; ++i) {
-            //cout << "i is: " << i << endl;
             for (int j = 0; j < cols; ++j) {
-                // cout << "Starting inner loop, i: " << i <<", j: " << j << endl;
-            
-                // Blink effect based on elapsed time and frequency
-                /*
-                int blinkFrequency;
-                if (useRows){
-                    blinkFrequency = blinkFrequencies[i];
-                } else {
-                    blinkFrequency = blinkFrequencies[j];
-                }
-                if (clock.getElapsedTime().asSeconds() - blinkoffset[i * cols + j]>= 1.0f / blinkFrequency) {
-                    texts[i * cols + j].setFillColor(texts[i * cols + j].getFillColor() == sf::Color::White ?
-                        sf::Color::Black : sf::Color::White);
-                    blinkoffset[i * cols + j] = clock.getElapsedTime().asSeconds();
-                }
-                */
+                
 
                 // Draw the text
                 window.draw(texts[i * cols + j]);
-                // cout << "Finished inner loop" << endl;
             }
         }
 
