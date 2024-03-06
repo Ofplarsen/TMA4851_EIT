@@ -17,7 +17,5 @@ add_executable(BlinkProg blink.cpp)
 include_directories(${Boost_INCLUDE_DIRS})
 
 target_link_libraries(BlinkProg PRIVATE LSL::lsl)
-target_link_libraries(BlinkProg PRIVATE asio::asio)
-target_link_libraries(BlinkProg PRIVATE pugixml::pugixml)
 target_link_libraries(BlinkProg PUBLIC Crow::Crow)
 target_link_libraries(BlinkProg PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
