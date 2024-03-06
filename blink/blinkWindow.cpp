@@ -7,6 +7,54 @@ using namespace std;
 
 
 
+int showChessBoardString(string displayString){
+    
+    // Create the window
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Game Board");
+
+
+    // Load a font
+    sf::Font font;
+    font.loadFromFile("fonts\\ARIAL.TTF"); 
+
+    // Create text object
+    sf::Text text;
+
+    // Standard settings
+    text.setFont(font);
+    text.setCharacterSize(24);
+    int offset = 20;
+
+    // Set content of text block if it exists
+    text.setString(displayString);
+
+
+    // Finalize and add text
+    text.setFillColor(sf::Color::White);
+    text.setPosition(sf::Vector2f(offset, offset));
+
+
+     while (window.isOpen())
+    {
+        // Check if window is closed
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // Reset window
+        window.clear();
+        
+        window.draw(text);
+        
+        // Display the window
+        window.display();
+    }
+    return 2;
+}
+
 int blinkRowsOrCols(vector<string> choices, bool useRows){
     // Can be set when running program
     bool TIMEOUT = true;
@@ -86,7 +134,6 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
         int offset = CELLSIZE/2;
 
         // Finalize and add text
-        text.setFillColor(sf::Color::White);
         text.setFillColor(sf::Color(128, 128, 128));
         text.setPosition(sf::Vector2f(offset + c*CELLSIZE, offset + r*CELLSIZE));
         texts.push_back(text);

@@ -36,6 +36,8 @@ crow::json::wvalue json_return_object(bool is_final, vector<string> pathIds){
 
 int main()
 {
+    bool SHOW_BOARD = false;
+
     // Set up lsl stream
     const int nchannels = 1;
     lsl::stream_info info("FlickerStream", "Markers", nchannels,  0.0, lsl::cf_int16, "MentalChess"); 
@@ -43,6 +45,7 @@ int main()
 
     // Create API app
     crow::SimpleApp app;
+    cout << "Board adress: " << &SHOW_BOARD << endl;
 
 
     CROW_ROUTE(app, "/")([](){
@@ -54,9 +57,18 @@ int main()
         return "Reached start";
     });
 
+    CROW_ROUTE(app, "/switch_board")
+        .methods("PUT"_method)
+    ([&SHOW_BOARD](){
+        cout << "Board adress: " << &SHOW_BOARD << endl << "Board: " << SHOW_BOARD << endl;;
+        SHOW_BOARD = !SHOW_BOARD;
+        cout << "Board adress: " << &SHOW_BOARD << endl << "Board: " << SHOW_BOARD << endl;;
+        return "Reached start";
+    });
+
     CROW_ROUTE(app, "/index_data")
         .methods("POST"_method)
-    ([&outlet, nchannels](const crow::request& req){
+    ([&outlet, nchannels, &SHOW_BOARD](const crow::request& req){
         // Get json from request
         auto x = crow::json::load(req.body);
         if (!x){
@@ -68,8 +80,6 @@ int main()
         auto state = x["state"];
         auto choices = state["choices"];
         auto display = state["display"];
-
-        cout << display << endl;
         
         vector<string> choiceNames;
         vector<string> pathIds = {};
@@ -127,6 +137,11 @@ int main()
 
         // Start blinking if more choices need to be made.
         if (!final_iteration){
+            if (SHOW_BOARD){
+                showChessBoardString(display.s());
+            }
+
+
             // Send start signal
             std::vector<int> marker = {0};
             outlet.push_sample(marker);
