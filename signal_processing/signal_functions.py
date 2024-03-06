@@ -125,7 +125,6 @@ def ReadFile(filename,n, read_start, read_end):
       srate = EEG['train'][n_calib]['srate']
       data = butter_bandpass_filter(data, 0.5, 10, srate, 4)
       markers = EEG['train'][n_calib]['markers_target']
-      print(markers)
 
       targetID = np.where(markers==1)[0]
       nontargetID = np.where(markers==2)[0]
@@ -145,4 +144,5 @@ def ReadFile(filename,n, read_start, read_end):
    nontargetEEGuse = nontargetEEG[:n] 
    targetEEGuse = targetEEG[:n]
    nosortEEGuse = nosortEEG[:n]
-   return nontargetEEGuse, targetEEGuse, nosortEEGuse
+   #markersUse = markers[]  SJEKK HVORDAN MARKERS ER LAGRET
+   return nontargetEEGuse, targetEEGuse, nosortEEGuse, markersUse
