@@ -7,8 +7,10 @@ import time
 class BackendClient:
     def __init__(self, base_url):
         self.base_url = base_url
-        self.int_streams = resolve_stream('source_id', 'MentalChess')  # change 'Int' to the actual type of your signal, also check name congruence
-
+        int_streams = resolve_stream('source_id', 'MentalChess')  # change 'Int' to the actual type of your signal, also check name congruence
+        self.int_inlet = StreamInlet(int_streams[0])
+        #index_streams = resolve_stream('source_id', 'SignalProcessing')
+        #self.index_inlet = StreamInlet(index_streams[0])
 
     def get_data_from_game(self):
         #temp
@@ -55,14 +57,29 @@ class BackendClient:
             # Handle error
             print(f"Error: {response.status_code}")
 
-    def get_index_from_sp_unit(self):
+    def listen_for_index_from_sp_unit(self):
+
+        """
         url = f"{self.base_url}/extracted_index"
         response = requests.get(url)
         if response.status_code == 200:
             return response.json()
         else:
             # Handle error
-            print(f"Error: {response.status_code}")
+            print(f"Error: {response.status_code}")"""
+        #self.index_inlet
+        while s:
+        # get a single sample
+            index_sample, int_timestamp = self.index_inlet.pull_sample()
+
+            # process the single sample
+            if index_sample is not None:
+                print(f"Received integer sample {index_sample} at timestamp {int_timestamp}")
+                if len(index_sample)==2: #dummy validation to filter out bugs
+                    print(f"Signal resempling an index received: {index_sample} - ...")
+                    s = False
+                    # exit the loop
+                
 
 
     def detect_lsl_finished_signal(self):
@@ -72,25 +89,20 @@ class BackendClient:
         print("listening for signal")
 
         while s:
-            if len(self.int_streams) > 0:
-                #print('Inside if (signal found?)')
-                # create a new inlet to read from the stream
-                int_inlet = StreamInlet(self.int_streams[0])
+            # get a single sample
+            int_sample, int_timestamp = self.int_inlet.pull_sample()
 
-                # get a single sample
-                int_sample, int_timestamp = int_inlet.pull_sample()
-
-                # process the single sample
-                if int_sample is not None:
-                    print(f"Received integer sample {int_sample} at timestamp {int_timestamp}")
-                    if int_sample == finished_indicator_int:
-                        print(f"Signal indicating finished with flickering: {int_sample} - proceed with API request to signal processing...")
-                        s = False
+            # process the single sample
+            if int_sample is not None:
+                print(f"Received integer sample {int_sample} at timestamp {int_timestamp}")
+                if int_sample == finished_indicator_int:
+                    print(f"Signal indicating finished with flickering: {int_sample} - proceed with API request to signal processing...")
+                    s = False
                 # exit the loop
-                
             else:
-                print("Signal not found. Retrying in 1 second...")
-                time.sleep(0.5)  # wait for 1 second before retrying
+                print("stops here")
+                
+            
 
         
 
@@ -109,7 +121,7 @@ if __name__ == '__main__':
     while status:
         list_of_indices = []
         #get choises from game engine
-        print('\Requesting data from game\n')
+        print('\nRequesting data from game\n')
         data_from_game = client.get_data_from_game()
 
         #send choises to visual unit/flickering
@@ -119,11 +131,11 @@ if __name__ == '__main__':
         #list_of_indices = []
         while not is_final_flag:
             #receive start signal (lsl?)
-            client.detect_lsl_finished_signal()
-            print('\nSend POST to signal processing\n')
-            #received_index = client.get_index_from_sp_unit()
+            #client.detect_lsl_finished_signal()
+            #print('\nSend POST to signal processing\n')
+            #received_index = client.listen_for_index_from_sp_unit()
             #list_of_indices.append(received_index)
-            list_of_indices = [0, 1]
+            list_of_indices = [[0, 1],[0,1]]  #temporary before connection to sp
             print('\nSending indexing data to flickering unit\n')
             choices, is_final_flag = client.send_data_to_flicker(data_from_game, list_of_indices)
         print('\nSending actual decicions back to game\n')
