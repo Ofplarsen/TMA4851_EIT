@@ -3,10 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pyxdf
 import time
+from pylsl import StreamInlet, resolve_stream, resolve_byprop
 from SignalProcessingRepo.SignalProcessing.io_utils import read_xdf
 from SignalProcessingRepo.SignalProcessing import filter
 from SignalProcessingRepo.SignalProcessing.SSVEP.cca import cca_maxcorr_freq
 from SignalProcessingRepo.SignalProcessing.SSVEP.cca import get_Y
+from lsl_interactions import listen_for_amp, listen_for_start, send_index_data
 from pylsl import StreamInfo, StreamOutlet
 
 
@@ -25,9 +27,19 @@ if __name__ == "__main__":
     t = np.linspace(0, 2, 1/sample_rate)
     Y = get_Y(f_k_arr, t)
 
+    flicker_info = resolve_stream('source_id', 'MentalChess')
+    flicker_inlet = StreamInlet(flicker_info[0])
+
+    amp_info = resolve_stream('source_id', 'SignalProcessing')
+    amp_inlet = StreamInlet(amp_info[0])
+
+    backend_info = StreamInfo('IndexData', 'Marker', 1, 100, 'int32', 'IndexData')
+    backend_inlet = StreamInlet(flicker_info[0])
+
+
     while True:
-        t = listen_for_start(info_flicker)  # method defined by Hans
-        X_row, X_col = listen_for_amp(info_flicker, info_amp)  # to be defined by Hans
+        t = listen_for_start(flicker_inlet)  # method defined by Hans
+        X_row, X_col = listen_for_amp(flicker_inlet, amp_inlet)  # to be defined by Hans
         # X_row = (
         #
         # apply signal processing to row_amp and col_amp respectively to
@@ -36,7 +48,7 @@ if __name__ == "__main__":
         row_idx = cca_maxcorr_freq(X_row, Y)  # already exists, but with different name
         col_idx = cca_maxcorr_freq(X_col, Y)
         idxs = [row_idx, col_idx]
-        send_idx_data(info_backend, idxs)
+        send_index_data(backend_inlet, idxs)
 
         # TODO
         # Torbjørn:
