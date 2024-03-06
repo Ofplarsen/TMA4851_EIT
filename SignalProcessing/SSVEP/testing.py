@@ -13,7 +13,10 @@ def create_ref(f_k_arr, sample_rate):
     return df
 
 
-def create_X(f_k_arr, sample_rate, noises: list[tuple], white_noise: tuple):
+def create_X(
+        f_k_arr: np.ndarray, sample_rate: int,
+        noises: list[tuple], white_noise: tuple, n_switch_points: int
+):
     t_max = 100
     t = np.arange(0, t_max, 1/sample_rate)
     ref = create_ref(f_k_arr, sample_rate)
@@ -41,8 +44,25 @@ def create_X(f_k_arr, sample_rate, noises: list[tuple], white_noise: tuple):
         X.loc[t_1:t_2, "x"] = ref.loc[t_1:t_2, f_k]
     for noise in noises:
         X.iloc[:, 0] += noise[0] * np.sin(2 * np.pi * noise[1] * t)
-    X.iloc[:, 0] += np.random.normal(X.iloc[:, 0], scale=white_noise * X.iloc[:, 0].std())
+    X.iloc[:, 0] += np.random.normal(X.iloc[:, 0], scale=white_noise * X.iloc[:, 0].std()
     return X, state_ser
+
+
+def create_X_mat(
+    f_k_arr: np.ndarray, sample_rate: int,
+    noise_params: tuple[tuple], white_noise_sd,
+    n_channels: int, t_max: float = 2,
+) -> pd.DataFrame:
+    t_max = 100
+    t = np.arange(0, t_max, 1/sample_rate)
+    ref = create_ref(f_k_arr, sample_rate)
+    n = t_max * sample_rate
+    X = pd.DataFrame(data=np.outer(ref, np.ones(n_channels)), index=t)
+    t_mat = np.outer(t, np.ones(n_channels))
+    for noise_param in noise_params:
+        X += noise_param[0] * np.sin(2 * np.pi * noise_params[1] * t_mat)
+    X += np.random.normal(0, scale=white_noise_sd, size=X.shape)
+    return X
 
 
 def classify(X, f_k_arr, win=2*500, step=250, include_w_y=False):
