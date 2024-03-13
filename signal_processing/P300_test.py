@@ -9,7 +9,7 @@ import pandas as pd
 import signal_functions as sf
 
 #Read .mat file
-EEG = mat73.loadmat("../../data/s01.mat")
+EEG = mat73.loadmat("data/s01.mat")
 EEG.keys()
 EEG['RSVP'].keys()
 EEG['test'][0].keys()
@@ -75,6 +75,6 @@ def PlotForEachElectrode():
 
    plt.show()
 
-PlotForEachElectrode()  
+#PlotForEachElectrode()  
 
 #Selection algorithm: slice down to intervall 
