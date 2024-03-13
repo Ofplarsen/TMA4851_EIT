@@ -17,7 +17,9 @@ class ChessEngine:
         board = self.board
 
         legal_moves = list(board.legal_moves)
-        data = {"choices": [], "display": board.fen(), "status": not board.is_game_over()}
+        disp = str(board)
+        disp = disp.replace(' ', '')
+        data = {"choices": [], "display": disp, "status": not board.is_game_over()}
         if not data['status']: #drops if no choises to send
             return data
         for piece in chess.PIECE_TYPES:
