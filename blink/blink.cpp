@@ -9,6 +9,7 @@
 
 using namespace std;
 
+string hardcodedBoard = "RNBQKBNR\nPPPPPPPP\n........\n........\n........\n........\npppppppp\nrnbqkbnr";
 /*
 void sendLSL(int signal){
     const int nchannels = 1;
@@ -138,7 +139,9 @@ int main()
         // Start blinking if more choices need to be made.
         if (!final_iteration){
             if (SHOW_BOARD){
-                showChessBoardString(display.s());
+                string board = hardcodedBoard;
+                //string board = display.s();
+                showChessBoardString(board);
             }
 
 
