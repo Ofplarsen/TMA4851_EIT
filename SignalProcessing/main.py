@@ -26,32 +26,37 @@ if __name__ == "__main__":
     #t = np.arange(0, 2, 1/sample_rate)
     #Y = get_Y(f_k_arr, t)
 
+    backend_info = StreamInfo('IndexData', 'Marker', 2, 100, 'int32', 'IndexData')
+    backend_outlet = StreamOutlet(backend_info)
+
     flicker_info = resolve_stream('source_id', 'MentalChess')
     flicker_inlet = StreamInlet(flicker_info[0])
 
     amp_info = resolve_stream('source_id', 'SignalProcessing')
     amp_inlet = StreamInlet(amp_info[0])
 
-    backend_info = StreamInfo('IndexData', 'Marker', 1, 100, 'int32', 'IndexData')
-    backend_inlet = StreamInlet(flicker_info[0])
+    
 
 
     while True:
         tid = listen_for_start(flicker_inlet)  # method defined by Hans
-        X_row = listen_for_amp(flicker_inlet, amp_inlet, indicator=[1])  # to be defined by Hans
-        X_col = listen_for_amp(flicker_inlet, amp_inlet, indicator=[2])
-        t = np.arange(0, X_row.shape[0], 1)
+        X_row = listen_for_amp(flicker_inlet, amp_inlet, indicator=[1])[-3000:]  # to be defined by Hans
+        X_col = listen_for_amp(flicker_inlet, amp_inlet, indicator=[2])[-3000:]
+        t = np.arange(0, X_row.shape[0]*0.02, 0.02)
+
+        print('Get y now...')
         Y = get_Y(f_k_arr, t)
-        # X_row = (
-        #
-        # apply signal processing to row_amp and col_amp respectively to
-        # first obtain the max-correlation reference frequency and then
-        # find argmax = row_n
+
         print(Y.shape, X_row.shape)
+        X_row = filter.apply_filters(pd.DataFrame(data=X_row, index=t), 0.2, 0.25, (1, 15), 3)
         row_idx = cca_maxcorr_freq(pd.DataFrame(X_row), Y)  # already exists, but with different name
-        col_idx = cca_maxcorr_freq(pd.DataFrame(X_col), Y)
+        t_x_col = np.arange(0, X_col.shape[0]*0.02, 0.02)
+        Y_x_col = get_Y(f_k_arr, t_x_col)
+        X_col = filter.apply_filters(pd.DataFrame(data=X_col, index=t_x_col), 0.2, 0.25, (1, 15), 3)
+        col_idx = cca_maxcorr_freq(pd.DataFrame(X_col), Y_x_col)
         idxs = [row_idx, col_idx]
-        send_index_data(backend_inlet, idxs)
+        print('estimated indices: ', idxs)
+        send_index_data(backend_outlet, idxs)
 
         # TODO
         # Torbjørn:

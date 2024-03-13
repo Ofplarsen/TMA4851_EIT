@@ -37,7 +37,8 @@ class ChessEngine:
 
     # Converts input from blinker to "user move" format
     def convert_to_string(self, data):
-        return "".join(data['choices'])
+        print('data["ids"]: ', data['ids'], type(data['ids']))
+        return "".join(data['ids'])
 
 
     """def play_the_game(user_move, board):
@@ -54,17 +55,26 @@ class ChessEngine:
 
     def do_move(self, user_move):
         board = self.board
-        print("User move:\n", user_move)
-        print("Board before user move:\n", board)
+        print("User move received from Backend:\n", user_move)
+        if board.is_game_over():
+            print('The game received a move, but the game is finished')
+            return False
         
         move = self.convert_to_string(user_move)  # Input from blinking
-        print("Move converted to string:\n", move)
+        move_uci = chess.Move.from_uci(move)
+        if not move_uci in board.legal_moves:
+            print('The move from backend was not legal: ', move_uci)
+            print('proceeds with random')
+            move_uci = random.choice(list(board.legal_moves))
+
+        print("Board before user move:\n", board)
         
-        board.push(chess.Move.from_uci(move))  # Make user move
+        board.push(move_uci)  # Make user move
         print("Board after user move:\n", board)
         
         if board.is_game_over():  # Check if game is over after user move
             print('Game over')
+            return False
         else:
             computer_move = random.choice(list(board.legal_moves))
             print("Computer move:\n", computer_move)
@@ -73,8 +83,10 @@ class ChessEngine:
         
             if board.is_game_over():  # Check if game is over after computer move
                 print('Game over')
+                return False
 
         self.board = board
+        return True
 
 chess_engine = ChessEngine()
 
@@ -97,8 +109,8 @@ def move_chosen(engine=chess_engine):
     print("Received data:", user_move)
     #TODO:save data received where it is appropriate
     # Return a response
-    engine.do_move(user_move)
-    return jsonify({"message": "Data received successfully"}), 200
+    status = engine.do_move(user_move)
+    return jsonify({"message": "Data received successfully", "status":status}), 200
 #############################################################################
 #board = chess.Board()
 #app = Flask(__name__)

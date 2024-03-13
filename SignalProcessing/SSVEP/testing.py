@@ -4,15 +4,16 @@ import matplotlib.pyplot as plt
 from SSVEP.cca import get_Y, rolling_cca_classification
 #from .. import filter
 import filter
+import random as rnd
 
 
 def create_ref(f_k_arr, sample_rate, t_max):
     t = np.arange(0, t_max, 1/sample_rate)
-    arr = np.array([np.sin(2 * np.pi * f_k * t) for f_k in f_k_arr]).T
+    index = rnd.randint(1, len(f_k_arr)-1)
     #df = pd.DataFrame(data=arr, columns=f_k_arr, index=t)
-    freq = f_k_arr[1]
+    freq = f_k_arr[index]
     ser = pd.Series(np.sin(2*np.pi*freq*t), index=t)
-    return ser
+    return ser, index
 
 
 def create_X(
@@ -21,7 +22,7 @@ def create_X(
 ):
     t_max = 100
     t = np.arange(0, t_max, 1/sample_rate)
-    ref = create_ref(f_k_arr, sample_rate)
+    ref, index = create_ref(f_k_arr, sample_rate)
     n = t_max * sample_rate
     X = pd.DataFrame(data=np.empty((n, 1)), index=t, columns=["x"])
     lwr, upr = 3, 5
@@ -57,7 +58,7 @@ def create_X_mat(
 ) -> pd.DataFrame:
     t_max = 100
     t = np.arange(0, t_max, 1/sample_rate)
-    ref = create_ref(f_k_arr, sample_rate, t_max)
+    ref, index = create_ref(f_k_arr, sample_rate, t_max)
     n = t_max * sample_rate
     a = np.outer(ref, np.ones(n_channels))
     X = pd.DataFrame(data=a, index=t)
@@ -65,6 +66,7 @@ def create_X_mat(
     for noise_param in noise_params:
         X += noise_param[0] * np.sin(float(2 * np.pi * noise_param[1]) * t_mat)
     X += np.random.normal(0, scale=white_noise_sd, size=X.shape)
+    print("The index: ", index)
     return X
 
 

@@ -38,13 +38,13 @@ def listen_for_amp(flicker_inlet, amp_inlet, indicator):
         # get a single indicator sample
         amp_sample, amp_timestamp = amp_inlet.pull_sample()
         # process the single sample
-        print('iteration', j)
+        #print('iteration', j)
         if amp_sample is not None:
-            print(i)
-            amp.append([amp_sample,amp_timestamp]) #omitting timestamp
+            amp.append(amp_sample) #omitting timestamp
 
     indicator_thread.join()
-    print('Returning eeg sequence...\n')
+    print(f'Returning eeg sequence for indicator signal: {indicator}\n')
+    print('len of the array', len(amp))
     return np.array(amp)
 """
 def listen_for_amp(flicker_inlet, amp_inlet, indicator: list):
