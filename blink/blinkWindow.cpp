@@ -8,13 +8,15 @@ using namespace std;
 
 
 // Can be set when running program
+int SCREEN_SIZE = 1000;
 bool TIMEOUT = true;
-int SECONDS = 7;
-const float CELLSIZE = 150.f;
+int SECONDS = 1;
+float CELLSIZE = 150.f;
 const float BOARDCELLSIZE = 110.f;
 
 vector<string> getTextureNames(){
     vector<string> names;
+    /*
     names.push_back("W_Pawn.png");
     names.push_back("W_Knight.png");
     names.push_back("W_Bishop.png");
@@ -27,6 +29,19 @@ vector<string> getTextureNames(){
     names.push_back("B_Rook.png");
     names.push_back("B_Queen.png");
     names.push_back("B_King.png");
+    */
+    names.push_back("b_pawn_png_128px.png");
+    names.push_back("b_knight_png_128px.png");
+    names.push_back("b_bishop_png_128px.png");
+    names.push_back("b_rook_png_128px.png");
+    names.push_back("b_queen_png_128px.png");
+    names.push_back("b_king_png_128px.png");
+    names.push_back("w_pawn_png_128px.png");
+    names.push_back("w_knight_png_128px.png");
+    names.push_back("w_bishop_png_128px.png");
+    names.push_back("w_rook_png_128px.png");
+    names.push_back("w_queen_png_128px.png");
+    names.push_back("w_king_png_128px.png");
     return names; 
 }
 
@@ -56,7 +71,7 @@ vector<string> formatSquares(string displayString){
     int sum = 0;
     for (size_t i = 0; i < 64+7; i++){
         string c = displayString.substr(i, 1);
-        if (c != "\n"){
+        if (c != "\n" && c != " "){
             sum += 1;
             squares.push_back(c);
         }
@@ -70,7 +85,7 @@ int showChessBoardSprites(string displayString){
     
     vector<string> cells = formatSquares(displayString);
     // Create the window
-    int winSize = BOARDCELLSIZE*8+40;
+    int winSize = BOARDCELLSIZE*8;
     sf::RenderWindow window(sf::VideoMode(winSize, winSize), "Game Board");
 
 
@@ -84,16 +99,18 @@ int showChessBoardSprites(string displayString){
 
 
 
+    cout << "starting texture loop" << endl;
     vector<string> textureNames = getTextureNames();
     vector<sf::Texture> textures;
     for (size_t i = 0; i < textureNames.size(); i++)
     {
         sf::Image image;
-        if (!(image.loadFromFile("sprites\\B_King.png")))
+        if (!(image.loadFromFile("sprites2\\" + textureNames[i])))
                 std::cout << "Cannot load image";   //Load Image
         
         sf::Texture texture;
         texture.loadFromImage(image);  //Load Texture from image
+        textures.push_back(texture);  //Load Texture from image
     }
     
     
@@ -106,6 +123,7 @@ int showChessBoardSprites(string displayString){
 
 
     
+    cout << "starting rect loop" << endl;
     // Create vector to hold rectangles
     vector<sf::RectangleShape> rectangles;
 
@@ -114,9 +132,9 @@ int showChessBoardSprites(string displayString){
         for (int j = 0; j < cols; ++j){
             int offset = BOARDCELLSIZE/2;
             sf::RectangleShape rect;
-            rect.setPosition(sf::Vector2f(20.f + BOARDCELLSIZE*i, 20.f + BOARDCELLSIZE*j));
+            rect.setPosition(sf::Vector2f(BOARDCELLSIZE*i, BOARDCELLSIZE*j));
             rect.setSize(sf::Vector2f(BOARDCELLSIZE, BOARDCELLSIZE));
-            rect.setFillColor((i+j)%2==1 ? sf::Color(0, 0, 0) : sf::Color(50, 50, 50));
+            rect.setFillColor((i+j)%2==0 ? sf::Color(240, 217, 181) : sf::Color(181, 136, 99));
             rectangles.push_back(rect);
         }
     }
@@ -129,41 +147,23 @@ int showChessBoardSprites(string displayString){
     font.loadFromFile("fonts\\ARIAL.TTF"); 
     
     // Create vector to hold cell texts
-    vector<sf::Text> texts;
+    vector<sf::Sprite> sprites;
 
+    cout << "starting sprite loop" << endl;
     // Create text objects for each cell
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j){
-            /*
-            // Standard settings
-            sf::Text text;
-            text.setFont(font);
-            text.setCharacterSize(24);
-
-            // Set content of text block if it exists
-            // string textString = i + ", " + j;
-            string textString = cells[j*8+i];
-            text.setString(textString);
-            
-
-            // Calculate position
-            int c = i%cols;
-            int r = i/cols;
-            int offset = BOARDCELLSIZE/2;
-
-            // Finalize and add text
-            text.setFillColor(sf::Color::White);
-            text.setPosition(sf::Vector2f(offset + i*BOARDCELLSIZE, offset + j*BOARDCELLSIZE));
-            texts.push_back(text);
-            */
            
             string text = cells[j*8+i];
             if (text != "."){
+                //cout << text << ": " << getTexturePos(text) << endl;
                 sf::Sprite sprite;
                 sprite.setTexture(textures[getTexturePos(text)]); 
-                int scale = (BOARDCELLSIZE-10)/32;
+                //sprite.setTexture(textures[k]); 
+                float scale = (BOARDCELLSIZE-30)/128;
                 sprite.setScale(scale, scale);
-
+                sprite.setPosition(sf::Vector2f((i+0.35)*BOARDCELLSIZE-20, (j + 0.35)*BOARDCELLSIZE-20));
+                sprites.push_back(sprite);
             }
         }
     }
@@ -185,8 +185,8 @@ int showChessBoardSprites(string displayString){
     text.setPosition(sf::Vector2f(offset, offset));
     */
 
-
-     while (window.isOpen())
+    cout << "starting main loop" << endl;
+    while (window.isOpen())
     {
         // Check if window is closed
         sf::Event event;
@@ -204,10 +204,14 @@ int showChessBoardSprites(string displayString){
             for (size_t j = 0; j < rows; j++)
             {
                 window.draw(rectangles[i*cols + j]);
-                window.draw(texts[i * cols + j]);
             }
             
         }
+        for (size_t i = 0; i < sprites.size(); i++)
+        {
+            window.draw(sprites[i]);
+        }
+        
         /*/
         texture.loadFromImage(image);            //loading the image again into texture
 
@@ -321,14 +325,7 @@ int showChessBoardString(string displayString){
 }
 
 int blinkRowsOrCols(vector<string> choices, bool useRows){
-    // Can be set when running program
-
-    // Define blink frequencies for each cell
-    vector<float> blinkFrequencies = {4.0f, 5.0f, 6.0f, 7.0, 11.0f, 13.0f};
     
-    // Create the window
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Grid Blinking");
-
     // Define the grid layout 
     const int cols = ceil(sqrt(choices.size()));
     int offset;
@@ -338,6 +335,18 @@ int blinkRowsOrCols(vector<string> choices, bool useRows){
         offset = 0;
     }
     const int rows = cols - offset;
+
+    // Can be set when running program
+    //CELLSIZE = SCREEN_SIZE-40/rows;
+
+    // Define blink frequencies for each cell
+    vector<float> blinkFrequencies = {4.0f, 5.0f, 6.0f, 7.0, 11.0f, 13.0f};
+    
+    // Create the window
+    //sf::RenderWindow window(sf::VideoMode(CELLSIZE*rows+40, CELLSIZE*cols + 40), "Grid Blinking");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Grid Blinking");
+
+    
     
     // What dimention to blink across
     int num_rectangles;

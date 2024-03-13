@@ -37,7 +37,7 @@ crow::json::wvalue json_return_object(bool is_final, vector<string> pathIds){
 
 int main()
 {
-    bool SHOW_BOARD = false;
+    bool SHOW_BOARD = true;
 
     // Set up lsl stream
     const int nchannels = 1;
@@ -122,7 +122,11 @@ int main()
                 // Calculate previous choice
                 const int cols = ceil(sqrt(choices.size()));
                 int chosen_index = j + i*cols;
-                
+
+                if (chosen_index >= choices.size()){
+                    chosen_index = 0;
+                    cout << "Illegal, choosing lowest" << endl;
+                }
                 // Save id of previous choice
                 pathIds.push_back(choices[chosen_index]["id"].s());
 
@@ -132,6 +136,7 @@ int main()
 
                 if (choices.size() == 0){
                     final_iteration = true;
+                    cout << "Final is now true" << endl;
                 }
             }
         }
@@ -139,9 +144,10 @@ int main()
         // Start blinking if more choices need to be made.
         if (!final_iteration){
             if (SHOW_BOARD){
-                string board = hardcodedBoard;
-                //string board = display.s();
-                showChessBoardString(board);
+                //string board = hardcodedBoard;
+                string board = display.s();
+                //showChessBoardString(board);
+                showChessBoardSprites(board);
             }
 
 
