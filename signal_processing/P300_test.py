@@ -9,7 +9,7 @@ import pandas as pd
 import signal_functions as sf
 
 #Read .mat file
-EEG = mat73.loadmat("test_data/s52.mat")
+EEG = mat73.loadmat("../../data/s01.mat")
 EEG.keys()
 EEG['RSVP'].keys()
 EEG['test'][0].keys()
@@ -17,7 +17,7 @@ EEG['train'][0].keys()
 
 # Parameters
 baseline = [-200, 0] # in ms
-frame = [250, 450] # in ms
+frame = [220, 500] # in ms
 
 #Test data:
 #testkeys = EEG['test'][0].keys()

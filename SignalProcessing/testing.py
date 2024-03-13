@@ -3,11 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pyxdf
 import time
-from SignalProcessingRepo.SignalProcessing.io_utils import read_xdf
-from SignalProcessingRepo.SignalProcessing.SSVEP import io_utils
-from SignalProcessingRepo.SignalProcessing import filter
-from SignalProcessingRepo.SignalProcessing.SSVEP import testing
-from SignalProcessingRepo.SignalProcessing.SSVEP.cca import rolling_cca_classification
+from io_utils import read_xdf
+from SSVEP import io_utils
+import filter
+from SSVEP import testing
+from SSVEP.cca import rolling_cca_classification
 
 # Load the XDF file
 ''''''
