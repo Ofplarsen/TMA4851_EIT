@@ -21,16 +21,25 @@ def get_Y(f_k_arr, t):
         data=np.empty((n, len(midx))), columns=midx, index=t
     )
     i = 0
+    print('preloop')
     for f_k in f_k_arr:
+        print('fk =', f_k)
         # create pd.DataFrame of fundamental frequencies:
         for j in range(0, 3):
+            print(j)
+            print('t is', t.shape)
             Y.iloc[:, i + j] = np.sin(2 * np.pi * (j + 1) * f_k * t)
+            print('middle')
             Y.iloc[:, i + j + 3] = np.cos(2 * np.pi * (j + 1) * f_k * t)
+            print('last')
         i += 6
+    print('postloop')
     return Y
 
 
 def cca_vectors(X, Y_k):
+    print('cca_vectors gives: ', X.shape, Y_k.shape)
+
     n_comp = min([len(X.columns), len(Y_k.columns)])
     cca_obj = CCA(n_comp, scale=True, tol=1e-9, max_iter=1000)
     cca_obj.fit(X, Y_k)
@@ -62,6 +71,7 @@ def cca_maxcorr_freq(X, Y, include_w_y=False):
         return freq, w_y_ser[freq]
     else:
         corrs = pd.Series([cca_corr(X, Y.loc[:, freq])[0] for freq in f_k_arr])
+        print(corrs)
         freq_ind = corrs.idxmax()
         return freq_ind
 

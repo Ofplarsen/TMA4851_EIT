@@ -36,7 +36,7 @@ def apply_filters(X, notch_freq, notch_Q, passband, bandpass_order):
         bandpass_order, passband, btype="bandpass", analog=False, output='ba',
         fs=sample_freq
     )
-    X_arr = scipy.signal.lfilter(b, a, X_arr).T
+    X_arr = scipy.signal.lfilter(b, a, X).T
     X = pd.DataFrame(data=X_arr, columns=cols, index=t)
     return X  # X.loc[3.5:, :]
 

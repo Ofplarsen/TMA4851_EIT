@@ -2,10 +2,9 @@ from pylsl import StreamInfo, StreamOutlet
 import numpy as np
 import time
 
-
 def send_single_int_signal():
     # Create a new StreamInfo for the signal stream
-    info = StreamInfo('SingleIntSignal', 'Int', 1, 100, 'int32', 'myuid34235')
+    info = StreamInfo('FlickerStream', 'Int', 1, 100, 'int32', 'myuid34235')
 
     # Create a new StreamOutlet
     outlet = StreamOutlet(info)

@@ -7,10 +7,10 @@ import time
 class BackendClient:
     def __init__(self, base_url):
         self.base_url = base_url
-        int_streams = resolve_stream('source_id', 'MentalChess')  # change 'Int' to the actual type of your signal, also check name congruence
-        self.int_inlet = StreamInlet(int_streams[0])
-        #index_streams = resolve_stream('source_id', 'SignalProcessing')
-        #self.index_inlet = StreamInlet(index_streams[0])
+        #int_streams = resolve_stream('source_id', 'MentalChess')  # change 'Int' to the actual type of your signal, also check name congruence
+        #self.int_inlet = StreamInlet(int_streams[0])
+        index_streams = resolve_stream('source_id', 'IndexData')
+        self.index_inlet = StreamInlet(index_streams[0])
 
     def get_data_from_game(self):
         #temp
@@ -27,6 +27,7 @@ class BackendClient:
         #temp
         base_url = "http://127.0.0.1:5000"
         url = f"{base_url}/choices"
+        data=dict(ids=data)
         response = requests.post(url, json=data)
         if response.status_code == 200:
             #print('Data sent successfully to game. Response: ', response.json())
@@ -51,7 +52,7 @@ class BackendClient:
         data = dict(state=data_from_game, indices=list_of_indices)
         response = requests.post(url, json=data)
         if response.status_code == 200:
-            print('Sent index to flickering unit: ',response.json())
+            print('Sent data to flickering unit and receiving: ',response.json())
             return response.json()
         else:
             # Handle error
@@ -68,6 +69,7 @@ class BackendClient:
             # Handle error
             print(f"Error: {response.status_code}")"""
         #self.index_inlet
+        s = True
         while s:
         # get a single sample
             index_sample, int_timestamp = self.index_inlet.pull_sample()
@@ -78,6 +80,7 @@ class BackendClient:
                 if len(index_sample)==2: #dummy validation to filter out bugs
                     print(f"Signal resempling an index received: {index_sample} - ...")
                     s = False
+                    return index_sample
                     # exit the loop
                 
 
@@ -116,7 +119,7 @@ class BackendClient:
 
 # main loop
 if __name__ == '__main__':
-    client = BackendClient("http://10.22.221.121:18080")
+    client = BackendClient("http://10.22.222.36:18080")
     status = True
     while status:
         list_of_indices = []
@@ -130,22 +133,26 @@ if __name__ == '__main__':
         is_final_flag = False
         #list_of_indices = []
         while not is_final_flag:
-            #receive start signal (lsl?)
-            #client.detect_lsl_finished_signal()
-            #print('\nSend POST to signal processing\n')
-            #received_index = client.listen_for_index_from_sp_unit()
-            #list_of_indices.append(received_index)
-            list_of_indices = [[0, 1],[0,1]]  #temporary before connection to sp
+            
+            received_index = client.listen_for_index_from_sp_unit()
+            list_of_indices.append(received_index)
+            #list_of_indices = [[0, 1],[0,1]]  #temporary before connection to sp
             print('\nSending indexing data to flickering unit\n')
-            choices, is_final_flag = client.send_data_to_flicker(data_from_game, list_of_indices)
+            data_from_flicker = client.send_data_to_flicker(data_from_game, list_of_indices)
+            ids = data_from_flicker['ids']
+            is_final_flag = data_from_flicker['is_final']
         print('\nSending actual decicions back to game\n')
-        client.send_data_to_game(choices)
+        status = client.send_data_to_game(ids)['status'] #gets the status from response json to decide if game is over
         
-
+    print('Program loop was terminated as game was marked as finished (status became False)')
         #TODO:receive/listen for data to from signal processing
         #TODO:send what is received from signal p. to flickering unit
         #TODO: iteratively the above ... also wait for the end signal from flickering unit to know when finalized? then know the choises are on the way
-            #listen for choises back from flickering unit
+            #listen for choises back from flickering unit        
 
-        #temporary:
-        status=False
+
+
+
+        #receive start signal (lsl?)
+            #client.detect_lsl_finished_signal()
+            #print('\nSend POST to signal processing\n')
