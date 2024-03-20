@@ -144,7 +144,7 @@ ImprovedSelection = [10, 2, 17, 21, 22, 25, 23, 24, 30, 6, 9, 4, 19, 20, 27]
 n = len(selection)
 
 
-nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\data\s53.mat", 0, 600, selection)
+nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
 ntp = MakePeak(nontargetuse)
 
 def SelectSignal(nontarget, target, n, permute):
@@ -171,7 +171,7 @@ def evaluate_Y(n):
    n signals in total, where only one is target signal
    '''
    selection = np.linspace(0, 31, 32, dtype=int)
-   nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\data\s53.mat", 0, 600, selection)
+   nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
    SS = SelectSignal(nontargetuse, targetuse, n, 1)
    
    #One run for Col index
