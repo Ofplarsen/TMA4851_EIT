@@ -8,7 +8,6 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/Users/hansivarolberg/vcpkg/scripts/b
 vcpkg install liblsl
 vcpkg install crow
 
-
 This place is not a place of honor. 
 No highly esteemed deed is commemorated here; nothing valued is here. 
 What is here was dangerous and repulsive to us. 

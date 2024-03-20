@@ -84,10 +84,6 @@ int showChessBoardSprites(string displayString){
     // What dimention to blink across
     int num_rectangles = cols*rows;
 
-
-
-
-    //cout << "starting texture loop" << endl;
     vector<string> textureNames = getTextureNames();
     vector<sf::Texture> textures;
     for (size_t i = 0; i < textureNames.size(); i++)
@@ -101,7 +97,6 @@ int showChessBoardSprites(string displayString){
         textures.push_back(texture);  //Load Texture from image
     }
     
-    cout << "starting rect loop" << endl;
     // Create vector to hold rectangles
     vector<sf::RectangleShape> rectangles;
 
@@ -127,7 +122,6 @@ int showChessBoardSprites(string displayString){
     // Create vector to hold cell texts
     vector<sf::Sprite> sprites;
 
-    cout << "starting sprite loop" << endl;
     // Create text objects for each cell
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j){
@@ -174,12 +168,6 @@ int showChessBoardSprites(string displayString){
             window.draw(sprites[i]);
         }
         
-        /*/
-        texture.loadFromImage(image);            //loading the image again into texture
-
-        window.draw(sprite);
-        
-        */
         // Display the window
         window.display();
     }
