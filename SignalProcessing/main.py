@@ -42,7 +42,7 @@ if __name__ == "__main__":
         tid = listen_for_start(flicker_inlet)  # method defined by Hans
         X_row = listen_for_amp(flicker_inlet, amp_inlet, indicator=[1])[-3000:]  # to be defined by Hans
         X_col = listen_for_amp(flicker_inlet, amp_inlet, indicator=[2])[-3000:]
-        t = np.arange(0, X_row.shape[0]*0.02, 0.02)
+        t = np.arange(0, X_row.shape[0], 1)/sample_rate
 
         print('Get y now...')
         Y = get_Y(f_k_arr, t)
@@ -50,11 +50,13 @@ if __name__ == "__main__":
         print(Y.shape, X_row.shape)
         X_row = filter.apply_filters(pd.DataFrame(data=X_row, index=t), 0.2, 0.25, (1, 15), 3)
         row_idx = cca_maxcorr_freq(pd.DataFrame(X_row), Y)  # already exists, but with different name
-        t_x_col = np.arange(0, X_col.shape[0]*0.02, 0.02)
+
+        t_x_col = np.arange(0, X_col.shape[0], 1)/sample_rate
         Y_x_col = get_Y(f_k_arr, t_x_col)
         X_col = filter.apply_filters(pd.DataFrame(data=X_col, index=t_x_col), 0.2, 0.25, (1, 15), 3)
         col_idx = cca_maxcorr_freq(pd.DataFrame(X_col), Y_x_col)
         idxs = [row_idx, col_idx]
+
         print('estimated indices: ', idxs)
         send_index_data(backend_outlet, idxs)
 
