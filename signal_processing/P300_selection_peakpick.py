@@ -142,13 +142,14 @@ selection = np.linspace(0, 31, 32, dtype=int)
 ImprovedSelection = [10, 2, 17, 21, 22, 25, 23, 24, 30, 6, 9, 4, 19, 20, 27]
 n = len(selection)
 
-nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("data/s01.mat",220, 500, selection)
+nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("EiT/data/s01.mat", 0, 600, selection)
 ntp = MakePeak(nontargetuse)
 #print("Performance checked list", PerformaceElectrode(ntp, nosortuse, marker, 15))
 
-print(CheckClassPercentage(ntp, nosortuse, 0.856, n, marker))
+print(CheckClassPercentage(ntp, nosortuse, 0.8446, n, marker))
 #print("Optimal threshold", OptimizeThresholdSimpel(ntp, nosortuse, n))
-
+# % = 0.8776 for s53, 0.8446 for s01
+#Note: when increase range to 0,600, true = 0, not possible to optimize, bad success percentage
 
 
 def Test():

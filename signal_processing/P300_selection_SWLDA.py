@@ -9,7 +9,10 @@ import signal_functions as sf
 import linear_classifier as lc
 
 selection = np.linspace(0, 31, 32, dtype=int)
-targetEEG, nontargetEEG = sf.OrigReadFile("data/s01.mat", 220, 500)
+targetEEG, nontargetEEG = sf.OrigReadFile("EiT/data/s53.mat", 0, 600)
+
+print(targetEEG.shape)
+print(nontargetEEG.shape)
 
 # Prepare for training
 down_target = lc.decimation_by_avg(targetEEG, 24)
@@ -48,6 +51,9 @@ while True:
     backward_elim = np.array(np.where(results_stats.pvalues == np.max(results_stats.pvalues)))
     x_column = np.delete(x_column, backward_elim)
 
+print(x_column.shape)
+print(np.max(results_stats.pvalues))
+
 argsort_pval = np.argsort(results_stats.pvalues)
 x_column = x_column[argsort_pval[range(60)]]
 
@@ -75,7 +81,7 @@ read_mdl = np.load(fname,allow_pickle='TRUE').item()
 # TODO: sjekke i detect_letter_P3speller, finn hvor jeg kan hente ut samme type klassifiering som peakpick
 
 #Check result
-EEG = mat73.loadmat("data/s01.mat")
+EEG = mat73.loadmat("EiT/data/s53.mat")
 read_mdl = np.load(fname,allow_pickle='TRUE').item()
 baseline = [-200, 0]
 frame = [0, 600]
@@ -113,5 +119,5 @@ for n_test in range(len(EEG['test'])):
   cur_text_result = ans_letters['text_result']
   print(f"User answer: {cur_text_result} ({int(ans_letters['correct_on_repetition'][-1])}/{int(word_len)}), accuracy: {ans_letters['acc_on_repetition'][-1]}")
 
-  print(f"Accuracy one letter: {np.exp(ans_letters['acc_on_repetition'][-1])/word_len}")
+  print(f"Accuracy one letter: {ans_letters['acc_on_repetition'][-1]**(1/word_len)}")
   

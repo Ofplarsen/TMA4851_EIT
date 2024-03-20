@@ -239,4 +239,4 @@ def OrigReadFile(filename, read_start, read_end):
       targetEEG = np.dstack((targetEEG, tmp_targetEEG))
       nontargetEEG = np.dstack((nontargetEEG, tmp_nontargetEEG))   
    # Get the markers for nosortEEG
-   return nontargetEEG, targetEEG
+   return targetEEG, nontargetEEG
