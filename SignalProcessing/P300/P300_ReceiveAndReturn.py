@@ -6,7 +6,6 @@ import time
 from pylsl import StreamInlet, resolve_stream, resolve_byprop
 from io_utils import read_xdf
 import filter
-from SSVEP.cca import cca_maxcorr_freq, get_Y
 from lsl_interactions import listen_for_amp, listen_for_start, send_index_data
 from pylsl import StreamInfo, StreamOutlet
 import P300_selection_peakpick

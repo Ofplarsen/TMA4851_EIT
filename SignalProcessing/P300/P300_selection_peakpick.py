@@ -11,7 +11,7 @@ def MakePeak(check):
    '''
    Takes in electrode to analyze, return (max. amplitude - min. amplitude) after averaging over all events for one electrode
    '''
-   max_check = np.max(check, axis=2)  #Average over all non-target events; TODO: check if possible to do max over all events then pick out avg
+   max_check = np.max(check, axis=2)  #Average over all non-target events; 
    peak = np.max(max_check[:, 200:], axis=1) - np.min(max_check[:, 0:200], axis=1)
    '''
    #If a negative answer, the find the peak using the event periode
@@ -45,11 +45,6 @@ def ClassificationWithPeak(peak_nontarget, check, threshold, n, j):
    else:
       return False
    
-#print("target percentage", tgtpercentage)
-#print("ntp:", ntp)
-#print(ClassificationWithPeak(ntp, nosortuse, 0.6, 32, 1))   #This is only one classification
-
-#Now check percentage correct classification
 def CheckClassPercentage(ntp, nosort, threshold, n, marker):
    '''
    nontarget: data array for non-target events
@@ -139,13 +134,13 @@ def PerformaceElectrode(ntg, nosort, marker, e):
 
 #[31, 32, 12, 13, 19, 16, 11, 14, 18, 20]
 #selection = [30, 31, 11, 12, 18, 15, 10, 13, 17, 19, 0, 29, 1, 28, 14, 16]
-selection = np.linspace(0, 31, 32, dtype=int)
-ImprovedSelection = [10, 2, 17, 21, 22, 25, 23, 24, 30, 6, 9, 4, 19, 20, 27]
-n = len(selection)
+#selection = np.linspace(0, 31, 32, dtype=int)
+#ImprovedSelection = [10, 2, 17, 21, 22, 25, 23, 24, 30, 6, 9, 4, 19, 20, 27]
+#n = len(selection)
 
 
-nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
-ntp = MakePeak(nontargetuse)
+#nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
+#ntp = MakePeak(nontargetuse)
 
 def SelectSignal(nontarget, target, n, permute):
    '''
@@ -171,9 +166,11 @@ def evaluate_Y(n):
    n signals in total, where only one is target signal
    '''
    selection = np.linspace(0, 31, 32, dtype=int)
-   nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
+   nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s01.mat", 0, 600, selection)
    SS = SelectSignal(nontargetuse, targetuse, n, 1)
-   
+   ntp = MakePeak(nontargetuse)
+   indexCol = -1
+   indexRow = -1
    #One run for Col index
    for j in range(n):
       if ClassificationWithPeak(ntp, SS, 0.7446, 32, j):
@@ -188,7 +185,7 @@ def evaluate_Y(n):
    return [indexRow, indexCol]
 #print("Performance checked list", PerformaceElectrode(ntp, nosortuse, marker, 15))
 
-#print(get_Y(6))
+#print(evaluate_Y(6))
 
 #print(CheckClassPercentage(ntp, nosortuse, 0.8446, n, marker))
 #print("Optimal threshold", OptimizeThresholdSimpel(ntp, targetuse, n))
