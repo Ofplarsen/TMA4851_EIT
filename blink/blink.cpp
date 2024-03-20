@@ -1,6 +1,7 @@
 #include "crow.h"
 #include <iostream>
 #include "blinkWindow.cpp"
+#include "chessDisplay.cpp"
 #include <windows.h>  
 //#include "displayChess.cpp"
 //#include "surgeChess\\src\\chess_engine.cpp"
