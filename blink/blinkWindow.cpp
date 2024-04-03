@@ -172,7 +172,7 @@ int blinkRowsOrColsp300(vector<string> choices, bool useRows){
 
     // Create the window
     //sf::RenderWindow window(sf::VideoMode(CELLSIZE*rows+40, CELLSIZE*cols + 40), "Grid Blinking");
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Grid Blinking");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_SIZE, SCREEN_SIZE), "Grid Blinking");
 
     
     
