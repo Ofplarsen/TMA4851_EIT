@@ -47,7 +47,7 @@ int main()
 
     // Create API app
     crow::SimpleApp app;
-    cout << "Board adress: " << &SHOW_BOARD << endl;
+    // cout << "Board adress: " << &SHOW_BOARD << endl;
 
 
     CROW_ROUTE(app, "/")([](){
@@ -247,6 +247,7 @@ int main()
                 }
             }
         }
+        
 
         // Start blinking if more choices need to be made.
         if (!final_iteration){
