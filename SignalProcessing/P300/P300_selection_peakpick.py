@@ -1,32 +1,22 @@
-import mat73
-import scipy
-import scipy.io as sio # cannot use for v7.3 mat file
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-
 import signal_functions as sf
 
 def MakePeak(check):
    '''
-   Takes in electrode to analyze, return (max. amplitude - min. amplitude) after averaging over all events for one electrode
+   Takes in clipped signal for relevant electrodes, takes max amplitude - min amplitude for each event, then averages over all events for one electrode
    '''
-   max_check = np.max(check, axis=2)  #Average over all non-target events; 
-   peak = np.max(max_check[:, 200:], axis=1) - np.min(max_check[:, 0:200], axis=1)
-   '''
-   #If a negative answer, the find the peak using the event periode
-   if np.min(peak) <= 0:
-      peak = np.max(max_check[:, 220:500], axis=1) - np.min(max_check[:, 220:500], axis=1)
-   else:
-      pass
-   '''
-   #print("non-target peak list:", peak)
+   # Maximum amplitude
+   maxpeak = np.max(check[:, 200:,:], axis=1) - np.min(check[:, 0:200, :], axis=1)
+
+   # Average over all events, saved as a list with value for each electrode
+   peak = np.mean(maxpeak, axis=1)
+   
    return peak
 
 def ClassificationWithPeak(peak_nontarget, check, threshold, n, j):
    '''
-   Peak_nontarget: must be obtained with non-target training set, a list, one peak for each electrode
-   check: data array not sorted after label
+   peak_nontarget: output from MakePeak, obtained with non-target training set, a list, one peak for each electrode
+   check: data array to test, not sorted after label
    threshold: the percentage of electrodes that needs to be positive to conclude a target event
    j: specify the position of event in dataset
    '''
@@ -39,108 +29,12 @@ def ClassificationWithPeak(peak_nontarget, check, threshold, n, j):
       else:
          continue
    b = TargetElectrode/n
-   #print("percentage positive electrodes", b, "Event number", j)
    if b > threshold:
       return True
    else:
       return False
-   
-def CheckClassPercentage(ntp, nosort, threshold, n, marker):
-   '''
-   nontarget: data array for non-target events
-   nosort: data array not sorted after label
-   threshold: the percentage of electrodes that needs to be positive to conclude a target event
-   n: number of electrodes
-   '''
-   correct = 0
-   true = 0
-   false = 0
-   for i in range(len(nosort[0,0,:])):
-      truetrue = len(np.where(marker==1)[0])*2
-      truefalse = len(np.where(marker==2)[0])*2
-      if ClassificationWithPeak(ntp, nosort, threshold, n, i):
-         true += 1
-         if i < 900:
-            if marker[i] == 1:
-               #print("Truetrue index found", i)
-               correct += 1
-         else:
-            index = i - 900
-            if marker[index] == 1:
-               correct += 1
-      else:
-         false += 1
-   #print('Known True false', truefalse)
-   #print('Classified false', false)
-   #print("Known True targets", truetrue)
-   #print("Classified True targets", true)
-   return correct/true
 
-def OptimizeThresholdSimpel(nontarget, nosort, n):
-   '''
-   nontarget: data array for non-target events
-   nosort: data array not sorted after label
-   n: number of electrodes
-   '''
-   threshold = np.linspace(0.6, 0.99, 60)
-   percentage = []
-   print("Running optimization")
-   for t in threshold:
-      perc = CheckClassPercentage(nontarget, nosort, t, n, marker)
-      if perc < 1:
-         percentage.append(perc)
-      else:
-         percentage.append(0)
-
-   for p in percentage:
-      if p == max(percentage):
-         index = percentage.index(p)
-   return threshold[index]
-
-
-def PerformaceElectrode(ntg, nosort, marker, e):
-   '''
-   return a list of best performing electrodes
-   e: number of electrodes to select
-   '''
-   true = len(np.where(marker==1)[0])*2
-   scorelist = []
-   for electrode in range(n):
-      correct = 0
-      for j in range(1800):
-         event_to_test = nosort[electrode,:,j]
-         amp = np.max(event_to_test) - np.min(event_to_test)
-         if ntg[electrode] < amp:
-            #then classify as true, check with marker
-            if j < 900:
-               if marker[j] == 1:
-                  correct += 1
-            else:
-               index = j - 900
-               if marker[index] == 1:
-                  correct += 1
-      score = correct/true
-      if score < 1:
-         scorelist.append(score)
-      else:
-         scorelist.append(0)
-
-   score_array = np.array(scorelist)
-   sorted_indices = np.argsort(score_array)[::-1]
-   top_n_indices = sorted_indices[:e]
-   return top_n_indices
-
-   
-
-#[31, 32, 12, 13, 19, 16, 11, 14, 18, 20]
-#selection = [30, 31, 11, 12, 18, 15, 10, 13, 17, 19, 0, 29, 1, 28, 14, 16]
-#selection = np.linspace(0, 31, 32, dtype=int)
-#ImprovedSelection = [10, 2, 17, 21, 22, 25, 23, 24, 30, 6, 9, 4, 19, 20, 27]
-#n = len(selection)
-
-
-#nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s53.mat", 0, 600, selection)
-#ntp = MakePeak(nontargetuse)
+# The following code is used to generate mock signal by retreiving from dataset, and returns coordinates evaluated with peak picking classifier
 
 def SelectSignal(nontarget, target, n, permute):
    '''
@@ -161,42 +55,29 @@ def SelectSignal(nontarget, target, n, permute):
 
    return stackedSignal
 
-def evaluate_Y(n):
+def evaluate_Y(m, n):
    '''
-   n signals in total, where only one is target signal
+   m signals for row
+   n signals (for col), where only one is target signal
+   returns [row, col] coordinates of target signal evaluated with peak picking classifier
    '''
+
    selection = np.linspace(0, 31, 32, dtype=int)
-   nontargetuse, targetuse, nosortuse, marker = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s01.mat", 0, 600, selection)
+   nontargetuse, targetuse, _, _ = sf.ReadFile("TMA4851_EIT\SignalProcessing\P300\s01.mat", 0, 600, selection)
    SS = SelectSignal(nontargetuse, targetuse, n, 1)
    ntp = MakePeak(nontargetuse)
-   indexCol = -1
-   indexRow = -1
+
    #One run for Col index
    for j in range(n):
-      if ClassificationWithPeak(ntp, SS, 0.7446, 32, j):
+      if ClassificationWithPeak(ntp, SS, 0.7446, 32, j): #Threshold specifically optimized for chosen true data
          indexCol = j
 
    #Regenerate mock signal for row index
-   SS = SelectSignal(nontargetuse, targetuse, n, 1)
-   for j in range(n):
+   SS = SelectSignal(nontargetuse, targetuse, m, 1)
+   for j in range(m):
       if ClassificationWithPeak(ntp, SS, 0.7446, 32, j):
          indexRow = j
 
    return [indexRow, indexCol]
-#print("Performance checked list", PerformaceElectrode(ntp, nosortuse, marker, 15))
 
-#print(evaluate_Y(6))
-
-#print(CheckClassPercentage(ntp, nosortuse, 0.8446, n, marker))
-#print("Optimal threshold", OptimizeThresholdSimpel(ntp, targetuse, n))
-# % = 0.8776 for s53, 0.8446 for s01
-#Note: when increase range to 0,600, true = 0, not possible to optimize, bad success percentage
-
-
-def Test():
-   nontargetuse, _, nosortuse, tgtpercentage = sf.ReadFileTest("data/s01.mat", 32, 220, 500)
-   ntp = MakePeak(nontargetuse)
-   print("target percentage", tgtpercentage)
-   print(ClassificationWithPeak(ntp, nosortuse, 0.877, 32, 1))   #This is only one classification
-   print("percentage correct classification", CheckClassPercentage(ntp, nosortuse, 0.752, 32))
-#Test()
+#print(evaluate_Y(10, 10))
