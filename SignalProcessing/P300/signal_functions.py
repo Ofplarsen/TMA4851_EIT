@@ -189,9 +189,6 @@ def ReadFileTest(filename,n, read_start, read_end):
          nontargetEEG = np.dstack((nontargetEEG, tmp_nontargetEEG))   
          nosortEEG = np.dstack((nosortEEG, tmp_nosortEEG))
    #Extract only data for the first n electrodes
-   print('total shape target', targetEEG.shape)
-   print('total shape nontarget', nontargetEEG.shape)
-   print('marker shape', markers.shape)
    nontargetEEGuse = nontargetEEG[:n] 
    targetEEGuse = targetEEG[:n]
    nosortEEGuse = nosortEEG[:n]
