@@ -44,9 +44,10 @@ def CheckClassPercentage(ntp, nosort, threshold, n, marker):
    correct = 0
    true = 0
    false = 0
+   truefalse = 0
    for i in range(1800):
-      truetrue = len(np.where(marker==1)[0])*2
-      truefalse = len(np.where(marker==2)[0])*2
+      knowntrue = len(np.where(marker==1)[0])*2
+      knownfalse = len(np.where(marker==2)[0])*2
       if ClassificationWithPeak(ntp, nosort, threshold, n, i):
          true += 1
          if i < 900:
@@ -58,11 +59,21 @@ def CheckClassPercentage(ntp, nosort, threshold, n, marker):
                correct += 1
       else:
          false += 1
-   print('Known false', truefalse)
+         if i < 900:
+            if marker[i] == 2:
+               truefalse += 1
+         else:
+            index = i - 900
+            if marker[index] == 2:
+               truefalse += 1
+   print('Known false', knownfalse)
+   print("Known True", knowntrue)
    print('Classified false', false)
-   print("Known True", truetrue)
    print("Classified True", true)
-   print("Classified True True", correct)
+   print("False True", true - correct)
+   print("False False", false - truefalse)
+   print("True True", correct)
+   print("True False", truefalse)
    return correct/true
 
 def OptimizeThresholdSimpel(nontarget, nosort, n):
